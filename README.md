@@ -9,7 +9,7 @@ Unfortunately, standard measures of natural selection such as dN/dS do not apply
 ## Method
 As of now, **overlapgenie** has only been implemented for one OLG relationship: sas12, in which sense-antisense genes overlap such that the reverse strand second codon positions correspond to codon position 1 in the sense reference gene. In other words, the sense gene's first codon position overlaps the antisense gene's second codon position: 
 
-<img src="https://github.com/chasewnelson/overlapgenie/blob/master/sas12_figure.png" alt="sas12 logo" width="450" height="175" align="middle">
+<img src="https://github.com/chasewnelson/overlapgenie/blob/master/sas12_figure.png" alt="sas12 logo" align="middle">
 
 This is based on the subroutines of Wei and Zhang's (2014) **sas12_data.pl** script, which performed a dN/dS calculation for a single sequence pair with no gaps. Overlapgenie expands upon this by allowing command-line user input for an arbitrary number of sequences (with (n^2-n)/2 pairwise comparisons) which may contain gaps.
 
