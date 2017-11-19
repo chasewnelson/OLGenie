@@ -31,7 +31,6 @@
 # CITATION1: https://github.com/chasewnelson/overlapgenie
 # CITATION2: Wei X, Zhang J. 2015. A simple method for estimating the strength of natural selection on overlapping genes. Genome Biol. Evol. 7:381–390.
 
-
 use strict;   
 use warnings; 
 use diagnostics;
@@ -414,6 +413,72 @@ exit;
 ####################################                 ####################################
 #########################################################################################
 #########################################################################################
+
+
+#########################################################################################
+sub calculate_p_distance {
+	my ($seq1,$seq2)=@_;
+	
+	my $seq_length = length($seq1);
+#	my @indices_both_gaps;
+	my %indices_both_gaps;
+	
+	# First, find positions that contain gaps in both and eliminate them
+	for(my $i=0; $i<$seq_length; $i++) {
+	
+		# If they're both gaps
+		if(substr($seq1, $i, 1) eq '-' && substr($seq2, $i, 1) eq '-') {
+#			push(@indices_both_gaps, $i);
+			$indices_both_gaps{$i}=1;
+		}
+		
+		# If they're both N
+		if(substr($seq1, $i, 1) eq 'N' && substr($seq2, $i, 1) eq 'N') {
+#			push(@indices_both_gaps, $i);
+			$indices_both_gaps{$i}=1;
+		}
+		
+	}
+	
+	# Cut out positions with gaps in both sequences
+	my $running_num_deletions = 0;
+	
+	for(my $i=0; $i<$seq_length; $i++) {
+		if(exists $indices_both_gaps{$i}) {
+			if($indices_both_gaps{$i} == 1) {
+				substr($seq1, ($i - $running_num_deletions), 1, '');
+				substr($seq2, ($i - $running_num_deletions), 1, '');
+				$running_num_deletions++;
+			}
+		}
+	}
+	
+	my $new_seq1_length = length ($seq1);
+	my $new_seq2_length = length ($seq2);
+	
+	if($new_seq1_length != $new_seq2_length) {
+		die "### SEQUENCES DIFFER IN LENGTH AFTER GAP PROCESSES: Chase's fault. Email him.\n\n";
+	}
+	
+	# We find out new positions that match (1) and don't (0)
+	my $match_string = &match_two_seqs($seq1,$seq2); # these are the new seqs with deletions
+	#print "$match_string\n";
+	# RESULT: 111111110010111010000000000101110000000000111111000011010010110000110110110010110111111110111010010101110110110111110110010000110110110010111110010000000010110011111110110010010110111010100110111111111010111111110110110110010110011100110110111010010111000110110010110110111010110111000010110110110110100000111010000000111000110110010110000011110110110110110110110010111111110110110110111110010110110110000110111110110110000111100111010100111100110010010010010101001010100111011110011110010010100110001011010110110110110111111010111111110110110110010111110110110111111111110110110111110110111110110110110110010110111110110010111110010110011110011110000000010000000000000000000000000101
+	
+	my $match_string_length = length($match_string);
+	
+	my $num_matching_positions;
+	for(my $i=0; $i<$match_string_length; $i++) {
+		if(substr($match_string, $i, 1) == 1) {
+			$num_matching_positions++;
+		}
+	}
+	
+	my $num_mismatch_positions = $match_string_length - $num_matching_positions;
+	my $p_distance = ($num_mismatch_positions / $match_string_length);
+	
+	return $p_distance;
+}
 
 
 #########################################################################################
@@ -919,8 +984,8 @@ sub N_S { # modified from Wei & Zhang (2015)
 	my ($dna1,$dna2,$R)=@_;
 	my @result;
 	my $N1N2=0;
-	my $N1S2=0;
 	my $S1N2=0;
+	my $N1S2=0;
 	my $S1S2=0;
 	my $N1=0;
 	my $S1=0;
@@ -951,15 +1016,15 @@ sub N_S_dna { # modified from Wei & Zhang (2015)
 	my $position1;
 	my $position2;
 	my $N1N2=0;
-	my $N1S2=0;
 	my $S1N2=0;
+	my $N1S2=0;
 	my $S1S2=0; 
 	my $length=length($dna);
 	my @partial_result;
 	my @result;
 	
-	for ( my $i=2; $i < ($length-2); $i++){ 
-		if ($i%3==1){
+	for (my $i=2; $i < ($length-2); $i++) { 
+		if ($i%3==1) {
 			$codon1=substr($dna,$i-1,3);
 			$codon2=substr($dna,$i-2,3);
 			$codon2=reverse($codon2);
@@ -989,6 +1054,7 @@ sub N_S_dna { # modified from Wei & Zhang (2015)
 		$N1S2=$N1S2+$partial_result[2];
 		$S1S2=$S1S2+$partial_result[3];
 	}
+	
 	my $N1=$N1N2+$N1S2;
 	my $S1=$S1N2+$S1S2;
 	my $N2=$N1N2+$S1N2;
@@ -1374,17 +1440,22 @@ sub change_place { # modified from Wei & Zhang (2015)
 sub compare_dna1_dna2 { # modified from Wei & Zhang (2015)
 	my ($aa1_dna1,$aa2_dna1,$aa1_dna2,$aa2_dna2)=@_;
 	my @result=(0,0,0,0);
+	
 	if ($aa1_dna1 eq $aa1_dna2) {
 		if ($aa2_dna1 eq $aa2_dna2) {
 			$result[3]=1;  
+			
 		} else {
 			$result[1]=1;
 		}
-	} elsif ($aa2_dna1 eq $aa2_dna2){
+		
+	} elsif ($aa2_dna1 eq $aa2_dna2) {
 		$result[2]=1;
-	} else{
+		
+	} else {
 		$result[0]=1;
 	}
+	
 	return @result;
 }
 
@@ -1399,8 +1470,8 @@ sub possible_change { # modified from Wei & Zhang (2015)
 	my $new_aa1;
 	my $new_aa2;
 	my $N1N2=0;
-	my $N1S2=0;
 	my $S1N2=0;
+	my $N1S2=0;
 	my $S1S2=0;
 	my $sum=0;
 	
@@ -1409,6 +1480,7 @@ sub possible_change { # modified from Wei & Zhang (2015)
 		substr($new_codon2,$position2,1,'T');
 		$new_aa1=codon2aa($new_codon1);
 		$new_aa2=codon2aa($new_codon2);
+		
 		if ($aa1 eq $new_aa1) {
 			if ($aa2 eq $new_aa2) {
 				if ($original_base eq 'T'){
@@ -1448,6 +1520,7 @@ sub possible_change { # modified from Wei & Zhang (2015)
 		substr($new_codon2,$position2,1,'A');
 		$new_aa1=codon2aa($new_codon1);
 		$new_aa2=codon2aa($new_codon2);
+		
 		if ($aa1 eq $new_aa1) {
 			if ($aa2 eq $new_aa2) {
 				if ($original_base eq 'A') {
@@ -1542,6 +1615,7 @@ sub possible_change { # modified from Wei & Zhang (2015)
 					$S1N2=$S1N2+1/(2+2*$R);
 				}
 			}
+			
 		} elsif($new_aa1 ne '_') {
 			if ($aa2 eq $new_aa2) {
 				if ($original_base eq 'G') {
@@ -1560,12 +1634,12 @@ sub possible_change { # modified from Wei & Zhang (2015)
 		}
 	}
 	
-	$sum=$N1N2+$N1S2+$S1N2+$S1S2;
+	$sum=$N1N2+$S1N2+$N1S2+$S1S2;
 	
-	if ($sum ne 0) {
+	if ($sum != 0) {
 		$N1N2=$N1N2/$sum;
-		$N1S2=$N1S2/$sum;
 		$S1N2=$S1N2/$sum;
+		$N1S2=$N1S2/$sum;
 		$S1S2=$S1S2/$sum;
 	}
 	
