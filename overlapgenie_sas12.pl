@@ -36,6 +36,7 @@ use warnings;
 use diagnostics;
 use autodie;
 use Parallel::ForkManager;
+use List::Util qw( min max );
 
 #my $procs_per_node = 4;
 
@@ -1803,4 +1804,258 @@ sub codon2aa { # modified from Wei & Zhang (2015)
 ##		print STDERR "Bad codon \"$codon\"!!\n";
 ##		exit;
 	}
+}
+
+# SET UP EXAMPLE
+my $N = 3;
+my $m = 120;
+
+my %dNN_hh;
+
+$dNN_hh{1}->{2}->{d} = 0.0009;
+$dNN_hh{1}->{2}->{var_d} = 0.00009;
+
+$dNN_hh{1}->{3}->{d} = 0.001;
+$dNN_hh{1}->{3}->{var_d} = 0.0001;
+
+$dNN_hh{2}->{3}->{d} = 0.0011;
+$dNN_hh{2}->{3}->{var_d} = 0.00011;
+
+my ($new_pi, $new_var_pi) = &var_pairwise_distance_NeiJin($N, $m, %dNN_hh);
+
+
+#########################################################################################
+# Calculate variance of dNN, dSN, dNS, and dSS according to Nei & Jin. Mol. Biol. Evol. 6(3):290-300. 1989.
+sub var_pairwise_distance_NeiJin {
+	my ($N, $m, $d_hh_ref) = @_; # $m = median nt in alignment, hh for dNN, dSN, dNS, or dSS
+	my %d_hh = %{$d_hh_ref};
+#	my %d_hh = %dNN_hh;
+#	my ($N, $m, @array) = @_; # $m is the number of nucleotides per sequence
+	
+	#---------Format of the input-----------
+	# $N is the total number of sequences.
+	# @array contains 4*N*N numbers: first one could be one of @all_dNN, @all_dNS, @all_dSN, @all_dSS
+	# second one could be one of @all_var_dNN, @all_var_dNS, @all_var_dSN, @all_var_dSS and 
+	# third and fourth are @all_indices_i and @all_indeces_j.
+	# all pairs of dNN_ij are in @all_dNN, and the order of ij should be the same for @all_dNN, @all_dNS, @all_dSN, and all @dSS.  
+	# @all_dNN contains results of sequence pair such that seq_index i and j are not equal. 
+	
+	#---------Requirement of input data-----------
+	# The calculation of cov(dNN_ij,dNN_kl) requires the existence of dNN_ij, dNN_kl, 
+	# dNN_il, dNN_jk, dNN_ik, dNN_jl.
+	# When not all four numbers exist, covariance cannot be calculated.
+	# var(pi_NN) can only be calculated when all pairs of sequence satisfy this criteria,
+	# so when dNN_ij does not exist, dNN_ix, and dNN_jx should all be removed from the calculation. 
+	# This subroutine only calculates var(pi_XX) and pi_XX when dXX (X could be N or S) 
+	# from all pairs of sequences exist.
+	
+	#(1) Regarding @array, I don't understand what this contains. The comments say it contains 
+	#	4 * N * N numbers. Is this a multidimensional array? If we have N sequences, then we 
+	#	have N-choose-2 = N(N-1)/2 comparisons between sequences. Thus there should be 
+	#	N(N-1)/2 numbers within each of @all_dNN, @all_dNS, @all_dSN, @all_dSS, @all_var_dNN, 
+	#	@all_var_dNS, @all_var_dSN, and @all_var_dSS. A particular sequence pair will have values 
+	#	located at the same index in each of these arrays. But I don't understand how this 
+	#	relates to @array.
+	#ANSWER:
+	#(1) I think you are right. The @array should contain @all_dNN, @all_dNS, @all_dSN, 
+	#	@all_dSS, @all_var_dNN, @all_var_dNS, @all_var_dSN, and @all_var_dSS 
+	#	as columns for,  and N(N-1)/2 rows are necessary and sufficient. 
+	#	I was not sure about needing the indices last time when I tried to do this. 
+	#	I think last time I might think something wrong about adding the indices. 
+	#	It should be enough to know N, i, j to check the thing. 
+	
+	#(2) It looks like $m is the number of nucleotides (not codons?) per sequence. Does this 
+	#	need to be the same number for all comparisons? If so, this may be a problem, because 
+	#	I have changed the actual sites present in each sequence pair by eliminating STOP 
+	#	codons and gaps. Perhaps we choose the median number of sites? Not sure.
+	#ANSWER:
+	#(2) $m is nucleotides in the original covariance calculation.  
+	#	I think using should be median is fair. The paper did not say anything about this, 
+	#	but this is not a specific problem to overlapping genes but to all indels problem. 
+	
+	# I don't want it to be an array. I want it to be a hash. So let's do a hash.
+#	my %example_hh; # keys are sequence numbers and/or other IDs
+#	$example_hh{1}->{2}->{dNN};
+#	$example_hh{1}->{2}->{var_dNN};
+#	$example_hh{1}->{2}->{dSN};
+#	$example_hh{1}->{2}->{var_dSN};
+#	$example_hh{1}->{2}->{dNS};
+#	$example_hh{1}->{2}->{var_dNS};
+#	$example_hh{1}->{2}->{dSS};
+#	$example_hh{1}->{2}->{var_dSS};
+	
+#	my $arrSize = @array;
+	
+#	my @all_dNN;
+	
+#	my @all_d = @array[0..$arraySize/4-1];
+#	my @all_var_d = @array[$arraySize/4..$arraySize*2/4-1];
+#	my @all_indices_1 = @array[$arraySize*2/4..$arraySize*3/4-1];
+#	my @all_indeces_2 = @array[$arraySize*3/4..$arraySize-1];
+	
+	#----------Define parametors to be estimated as output----------
+	my $pi = 0;
+	my $pi_counter = 0;
+	
+#	my $var_pi = 0;
+#	my $var_pi_counter = 0;
+	
+	my $var_pi_numerator = 0;
+	my $var_pi_numerator_counter = 0;
+	
+	#-----------Define other parameters----------
+	my $d_ij;
+	my $d_kl;
+	my $d_ik;
+	my $d_il;
+	my $d_jk;
+	my $d_jl;
+	my $var_d_ij;
+	my $cov_d_ij_kl;
+#	my $idx_ij;
+#	my $idx_kl;
+#	my $idx_ik;
+#	my $idx_il;
+#	my $idx_jk;
+#	my $idx_kl;
+	
+	#---------------Calculation---------------
+	for (my $seq_i = 1; $seq_i <= $N; $seq_i++) { # each sequence
+		for (my $seq_j = 1; $seq_j <= $N; $seq_j++) { # each sequence
+		
+			if ($seq_i != $seq_j) { # but not the same sequence
+				
+#				#----------Find index that correspond to ij pair, and assign number to ij parameters------------
+#				$idx_ij=find_index($i,$j,\@all_indices_1,\@all_indeces_2);
+				
+				#------------------------------------------------------------------------------------------
+				
+				# Obtain the values for this pair
+#				my $dNN_ij = $example_hh{$seq_i}->{$seq_j}->{dNN};
+#				my $var_dNN_ij = $example_hh{$seq_i}->{$seq_j}->{var_dNN};
+#				my $dSN_ij = $example_hh{$seq_i}->{$seq_j}->{dSN};
+#				my $var_dSN_ij = $example_hh{$seq_i}->{$seq_j}->{var_dSN};
+#				my $dNS_ij = $example_hh{$seq_i}->{$seq_j}->{dNS};
+#				my $var_dNS_ij = $example_hh{$seq_i}->{$seq_j}->{var_dNS};
+#				my $dSS_ij = $example_hh{$seq_i}->{$seq_j}->{dSS};
+#				my $var_dSS_ij = $example_hh{$seq_i}->{$seq_j}->{var_dSS};
+				
+#				$d_ij=$all_d[$idx_ij];
+#				$var_d_ij=$all_var_d[$idx_ij];
+				
+				# Let's do for dNN temporarily. Do we loop all four?
+				my $min_ij = min($seq_i, $seq_j);
+				my $max_ij = max($seq_i, $seq_j);
+				
+				$d_ij = $d_hh{$min_ij}->{$max_ij}->{d};
+				$var_d_ij = $d_hh{$min_ij}->{$max_ij}->{var_d};
+				
+				print "\nThe sequences are $seq_i and $seq_j and we have d_ij=$d_ij\, var_d_ij=$var_d_ij\n\n";
+				
+				#------------------------------Calculate pi and var_pi------------------------
+				$pi += $d_ij;
+				$pi_counter++;
+				
+#				$var_pi += $var_d_ij;
+#				$var_pi_counter++;
+				
+				my $covariance_sum = 0;
+				
+				# dNN again, or dSN? Also EVERY sequence, or start at 2? Complicated.
+				# k and l must both be larger than i? not sure.
+				for (my $seq_k = 1; $seq_k <= $N; $seq_k++) {
+					for (my $seq_l = 1; $seq_l <= $N; $seq_l++) {
+						if ($seq_k != $seq_l) { # but not the same sequence for dkl
+							if($seq_i == $seq_k && $seq_j == $seq_l) {
+								# IF IT *IS* THE SAME SEQ PAIRS, then Cov(dij, dkl) = Var(dij)
+								$cov_d_ij_kl = $d_ij;
+								$covariance_sum += $cov_d_ij_kl;
+							} else {
+							#----------Find index that correspond to kl pair, and assign number to kl parameters------------
+	#							$idx_kl = &find_index($k, $l, \@all_indices_1, \@all_indeces_2);
+	#							$idx_ik = &find_index($i, $k, \@all_indices_1, \@all_indeces_2);
+	#							$idx_il = &find_index($i, $l, \@all_indices_1, \@all_indeces_2);
+	#							$idx_jk = &find_index($j, $k, \@all_indices_1, \@all_indeces_2);
+	#							$idx_jl = &find_index($j, $l, \@all_indices_1, \@all_indeces_2);
+								
+							#---------------------------------------------------------------------------------------
+								my $min_kl = min($seq_k, $seq_l);
+								my $min_ik = min($seq_i, $seq_k);
+								my $min_il = min($seq_i, $seq_l);
+								my $min_jk = min($seq_j, $seq_k);
+								my $min_jl = min($seq_j, $seq_l);
+								
+								my $max_kl = max($seq_k, $seq_l);
+								my $max_ik = max($seq_i, $seq_k);
+								my $max_il = max($seq_i, $seq_l);
+								my $max_jk = max($seq_j, $seq_k);
+								my $max_jl = max($seq_j, $seq_l);
+								
+								print "\nmin of ($seq_i\, $seq_k\) is $min_ik\n" . 
+									"max of ($seq_i\, $seq_k\) is $max_ik\n\n";
+								
+								$d_kl = $d_hh{$min_kl}->{$max_kl}->{d};
+								$d_ik = $d_hh{$min_ik}->{$max_ik}->{d};
+								$d_il = $d_hh{$min_il}->{$max_il}->{d};
+								$d_jk = $d_hh{$min_jk}->{$max_jk}->{d};
+								$d_jl = $d_hh{$min_jl}->{$max_jl}->{d};
+								
+								$cov_d_ij_kl = &cov_calculation($d_ij, $d_kl, $d_ik, $d_jl, $d_il, $d_jk, $m);
+								$covariance_sum += $cov_d_ij_kl;
+								
+							} # not same seq comparisons
+						} # k != l
+					} # finished all l seqs
+				} # finished all k seqs
+				
+				$var_pi_numerator += ($var_d_ij + $covariance_sum);
+				$var_pi_numerator_counter++;
+			} # i != j
+		} # finished all j seqs
+	} # finished all i seqs
+	
+	# CALCULATE VARIANCE HERE
+	my $var_pi = 0;
+	
+	my @result = ($pi, $var_pi);
+	return @result;
+}
+
+#sub find_index { # Not finished
+#	my ($idx_i, $idx_j, $indices1, $indices2)=@_;
+#	my $ind_ij
+#	#iterate over @$indices1 instead of @indices1
+#	return $ind_ij
+#}
+
+
+#########################################################################################
+sub cov_calculation {
+	#Eqs1. b_ij = d_ij, for all i and j
+	
+	#Eqs2: b1 = b_ij + b_kl; 
+	#	b2 = b_ik + b_jl; 
+	#	b3 = b_il + b_jk
+	
+	#Eq3: b = (b1 - min[b1,b2,b3]) / 2
+	
+	#Eq4: p = 3/4 * (1 - exp(-4/3b))
+	
+	#Eq5: Cov(d_ij, d_kl) = 9p(1-p) / ((3-4p)^2m), 
+	#	m is the number of nucleotides examined per sequence.
+	
+	#Eq6: V(pi) = (sum(V(d_ij)) + sum(cov(d_ij,d_kl))) / (n(n-1))^2
+	#	all i,j pair i not equal to j
+	#	all ij,kl pair, i not equal to j and k not equal to l
+	
+	my ($d_ij, $d_kl, $d_ik, $d_jl, $d_il, $d_jk, $m) = @_; 
+	my $b1 = $d_ij + $d_kl;
+	my $b2 = $d_ik + $d_jl;
+	my $b3 = $d_il + $d_jk;
+	my $bm = min($b1, $b2, $b3);
+	my $b = ($b1 - $bm) / 2;
+	my $p = 3/4 * (1 - exp(-4/3 * $b));
+	my $cov_ij_kl = 9 * $p * (1 - $p) / (2 * $m * (3 - 4 * $p));
+	
+	return $cov_ij_kl;
 }
