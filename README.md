@@ -31,6 +31,7 @@ Several tests can subsequently be used to detect natural selection, e.g., purify
 * **--tree\_file**: a text file containing one Newick tree using the exact sequence names (headers) as the FASTA. If multiple trees are present, only the first will be used.
 * **--phase**: the phase of the overlapping gene (OLG) relationship: ss12, ss13, sas11, sas12, or sas13. The first number refers to the codon position in the reference gene (ORF1), while the second number refers to the codon position in the alternative (overlapping) gene (ORF2). For example, in sas12, genes overlap in sense-antisense relationship such that position 1 of codons in the sense reference gene correspond to position 2 of codons in the reverse strand overlapping gene. In other words, the sense gene's first codon position overlaps the antisense gene's second codon position:
 <img src="https://github.com/chasewnelson/overlapgenie/blob/master/sas12_figure.png" alt="sas12 logo" align="middle">
+
 * **--prune\_polytomies**: flag that indicates that polytomies should be reduced to the two sequences with most data (fewest gaps).
 * **--min\_support**: minimum bootstrap support (0-100) required for a sister pair to be included in the analysis.
 
