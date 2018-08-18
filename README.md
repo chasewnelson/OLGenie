@@ -2,7 +2,13 @@
 Perl software for analysis of selection in overlapping genes (OLGs) using sister pairs to estimate dN/dS with the Wei-Zhang method.
 
 ## Background
-Given the codon triplet nature of the genetic code and the two antiparallel strands of the DNA molecule, a single segment of DNA has the potential to encode 6 reading frames: three in the forward (sense) direction and three in the reverse (antisense) direction. Although all possible frames are seldom if ever used, a substantial fraction of genes in taxa ranging from viruses to humans encode overlapping gene (OLG) pairs, usually running in opposite directions (sense-antisense, or sas) (Sabath 2009). 
+Given the codon triplet nature of the genetic code and the two antiparallel strands of the DNA molecule, a single segment of DNA has the potential to encode 6 reading frames: three in the forward (sense) direction and three in the reverse (antisense) direction. Although all possible frames are seldom if ever used, a substantial fraction of genes in taxa ranging from viruses to humans encode overlapping gene (OLG) pairs, running in either the same (ss; sense-sense) or opposite directions (sas; sense-antisense) (Sabath 2009). We refer to these overlapping phases as ss12, ss13, sas11, sas12, or sas13, where the first number refers to the codon position in the reference gene (ORF1), and the second number refers to the codon position in the alternative (overlapping) gene (ORF2):
+
+<img src="https://github.com/chasewnelson/overlapgenie/blob/master/OLGs_all_phases.png" alt="sas12 logo" align="middle" width="400px">
+
+For example, in sas12, genes overlap in sense-antisense relationship such that position 1 of codons in the sense reference gene correspond to position 2 of codons in the reverse strand overlapping gene. In other words, the sense gene's first codon position overlaps the antisense gene's second codon position:
+	
+<img src="https://github.com/chasewnelson/overlapgenie/blob/master/sas12_figure.png" alt="sas12 logo" align="middle" width="2500px">
 
 Unfortunately, standard methods for detecting natural selection using dN/dS do not apply to OLGs, because a mutation that is synonymous in one frame may be nonsynonymous in another, and *vice versa*. Although some methods for detecting natural selection in OLGs have been developed, they are generally computationally intensive and limited in utility (*e.g.*, Wei and Zhang 2015; Sabath et al. 2008). Thus, it is necessary to develop improved approaches for detecting selection in OLGs. 
 
@@ -29,14 +35,7 @@ Several tests can subsequently be used to detect natural selection, e.g., purify
 
 * **--fasta\_file**: a FASTA file containing multiple aligned sequences of one coding sequence. The entire coding sequence must be an overlapping gene (OLG), with no non-overlapping codons. The frame must be the frame of the reference gene (ORF1) (see the --phase option). It is recommended that the user translate the gene sequences, align at the amino acid level, and then impose the amino acid alignment on the DNA alignment to preserve complete codons. (See align\_codon2aa.pl at <a target="_blank" href="https://github.com/chasewnelson/CHASeq">CHASeq</a>.)
 * **--tree\_file**: a text file containing one Newick tree using the exact sequence names (headers) as the FASTA. If multiple trees are present, only the first will be used.
-* **--phase**: the phase of the overlapping gene (OLG) relationship: ss12, ss13, sas11, sas12, or sas13. The first number refers to the codon position in the reference gene (ORF1), while the second number refers to the codon position in the alternative (overlapping) gene (ORF2):
-
-<center><img src="https://github.com/chasewnelson/overlapgenie/blob/master/OLGs_all_phases.png" alt="sas12 logo" align="middle" width="400px"></center>
-
-&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;For example, in sas12, genes overlap in sense-antisense relationship such that position 1 of codons in the sense reference gene correspond to position 2 of codons in the reverse strand overlapping gene. In other words, the sense gene's first codon position overlaps the antisense gene's second codon position:
-	
-<center><img src="https://github.com/chasewnelson/overlapgenie/blob/master/sas12_figure.png" alt="sas12 logo" align="middle" width="2500px"></center>
-
+* **--phase**: the phase of the overlapping gene (OLG) relationship: ss12, ss13, sas11, sas12, or sas13 (see above).
 * **--prune\_polytomies**: flag that indicates that polytomies should be reduced to the two sequences with most data (fewest gaps).
 * **--min\_support**: minimum bootstrap support (0-100) required for a sister pair to be included in the analysis.
 
