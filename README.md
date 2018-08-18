@@ -30,10 +30,10 @@ Several tests can subsequently be used to detect natural selection, e.g., purify
 * **--fasta\_file**: a FASTA file containing multiple aligned sequences of one coding sequence. The entire coding sequence must be an overlapping gene (OLG), with no non-overlapping codons. The frame must be the frame of the reference gene (ORF1) (see the --phase option). It is recommended that the user translate the gene sequences, align at the amino acid level, and then impose the amino acid alignment on the DNA alignment to preserve complete codons. (See align\_codon2aa.pl at <a target="_blank" href="https://github.com/chasewnelson/CHASeq">CHASeq</a>.)
 * **--tree\_file**: a text file containing one Newick tree using the exact sequence names (headers) as the FASTA. If multiple trees are present, only the first will be used.
 * **--phase**: the phase of the overlapping gene (OLG) relationship: ss12, ss13, sas11, sas12, or sas13. The first number refers to the codon position in the reference gene (ORF1), while the second number refers to the codon position in the alternative (overlapping) gene (ORF2):
-<img src="https://github.com/chasewnelson/overlapgenie/blob/master/OLGs_all_phases.png" alt="sas12 logo" align="middle">
+<img src="https://github.com/chasewnelson/overlapgenie/blob/master/OLGs_all_phases.png" alt="sas12 logo" align="middle", width="400px">
 
 	For example, in sas12, genes overlap in sense-antisense relationship such that position 1 of codons in the sense reference gene correspond to position 2 of codons in the reverse strand overlapping gene. In other words, the sense gene's first codon position overlaps the antisense gene's second codon position:
-<img src="https://github.com/chasewnelson/overlapgenie/blob/master/sas12_figure.png" alt="sas12 logo" align="middle">
+<img src="https://github.com/chasewnelson/overlapgenie/blob/master/sas12_figure.png" alt="sas12 logo" align="middle", width="2500px">
 
 * **--prune\_polytomies**: flag that indicates that polytomies should be reduced to the two sequences with most data (fewest gaps).
 * **--min\_support**: minimum bootstrap support (0-100) required for a sister pair to be included in the analysis.
