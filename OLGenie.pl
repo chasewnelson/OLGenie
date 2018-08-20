@@ -2111,6 +2111,8 @@ foreach my $sister1 (sort keys %sister_pairs) { # FOR EACH PAIR
 #############    ORF2: 3-1-2-3-1-2-3
 ##########################################################################################
 			} elsif($phase eq 'ss13') {
+				warn "\n### THIS PHASE IS NOT YET SUPPORTED! :'(\n\n";
+				last;
 				# Last 1 nt of prev codon, first 2 nt of next codon (same strand)
 				my $codon_sister1_ORF2_prev = substr($product_seq_sister1, ($site_index - 2), 3);
 				my $codon_sister1_ORF2_next = substr($product_seq_sister1, ($site_index + 1), 3);
@@ -2125,6 +2127,8 @@ foreach my $sister1 (sort keys %sister_pairs) { # FOR EACH PAIR
 #############    ORF2: 1-3-2-1-3-2-1
 ##########################################################################################
 			} elsif($phase eq 'sas11') {
+				warn "\n### THIS PHASE IS NOT YET SUPPORTED! :'(\n\n";
+				last;
 				# First 1 nt of next codon, last 2 nt of prev codon (opposite strand)
 				my $codon_sister1_ORF2_prev = substr($product_seq_sister1, ($site_index + 1), 3); # remember, looking 3'->5'
 				$codon_sister1_ORF2_prev = &revcom($codon_sister1_ORF2_prev);
@@ -3766,6 +3770,8 @@ foreach my $sister1 (sort keys %sister_pairs) { # FOR EACH PAIR
 #############    ORF2: 3-2-1-3-2-1-3
 ##########################################################################################
 			} elsif($phase eq 'sas13') {
+				warn "\n### THIS PHASE IS NOT YET SUPPORTED! :'(\n\n";
+				last;
 				# EXACT OVERLAP (opposite strand)
 				my $codon_sister1_ORF2 = substr($product_seq_sister1, $site_index, 3);
 				$codon_sister1_ORF2 = &revcom($codon_sister1_ORF2);
