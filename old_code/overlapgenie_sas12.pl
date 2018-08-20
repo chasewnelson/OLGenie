@@ -193,14 +193,14 @@ for(my $seq_index = 0; $seq_index < $num_seqs; $seq_index++) {
 		# If there are gaps, extract substrings without gaps in reference
 		my %dna1_gapless_index_to_substring;
 		if($num_gap_positions > 0) {
-			%dna1_gapless_index_to_substring = &extract_gapless_substrings($dna1,%gap_indices_in_pair); # returns (@gapless_substring_start_indices,@gapless_substrings);
+			%dna1_gapless_index_to_substring = &extract_gapless_substrings($dna1, %gap_indices_in_pair); # returns (@gapless_substring_start_indices,@gapless_substrings);
 		} else {
 			$dna1_gapless_index_to_substring{0} = $dna1;
 		}
 		
 		my %dna2_gapless_index_to_substring; 
 		if($num_gap_positions > 0) {
-			%dna2_gapless_index_to_substring = &extract_gapless_substrings($dna2,%gap_indices_in_pair);
+			%dna2_gapless_index_to_substring = &extract_gapless_substrings($dna2, %gap_indices_in_pair);
 		} else {
 			$dna2_gapless_index_to_substring{0} = $dna2;
 		}
@@ -661,7 +661,7 @@ sub determine_gap_indices_in_pair {
 
 #########################################################################################
 sub extract_gapless_substrings { # DO NOT CALL unless there is AT LEAST ONE GAP POSITION
-	my ($dna,%gap_indices) = @_;
+	my ($dna, %gap_indices) = @_;
 	
 #	my @gap_indices_keys = keys (%gap_indices);
 #	print "\ngap_indices_keys are @gap_indices_keys\n";

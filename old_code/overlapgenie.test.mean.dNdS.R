@@ -37,6 +37,9 @@ overlapgenie.test.means <- function(overlapgenie.results, num.bootstraps) {
   dNN.dSN.subset <- overlapgenie.results[overlapgenie.results$dNN!='*' & overlapgenie.results$dSN!='*',] # this works
   dNN.dSN.lm <- lm(as.double(as.character(dNN.dSN.subset$dNN)) ~ as.double(as.character(dNN.dSN.subset$dSN)) - 1) # omitting intercept
   dNN.dSN.slope <- summary(dNN.dSN.lm)$coefficients[1]
+  plot(as.double(as.character(dNN.dSN.subset$dNN)) ~ as.double(as.character(dNN.dSN.subset$dSN)), xlab="dSN", ylab="dNN")
+  abline(0, 1)
+  abline(dNN.dSN.lm, col="red") # regression line (y~x) 
   
   # Ref gene dN/dS estimate 2
   dNS.dSS.statistic <- dNS.mean/dSS.mean
@@ -54,6 +57,9 @@ overlapgenie.test.means <- function(overlapgenie.results, num.bootstraps) {
   dNN.dNS.subset <- overlapgenie.results[overlapgenie.results$dNN!='*' & overlapgenie.results$dNS!='*',] # this works
   dNN.dNS.lm <- lm(as.double(as.character(dNN.dNS.subset$dNN)) ~ as.double(as.character(dNN.dNS.subset$dNS)) - 1) # omitting intercept
   dNN.dNS.slope <- summary(dNN.dNS.lm)$coefficients[1]
+  plot(as.double(as.character(dNN.dNS.subset$dNN)) ~ as.double(as.character(dNN.dNS.subset$dNS)), xlab="dNS", ylab="dNN")
+  abline(0, 1)
+  abline(dNN.dNS.lm, col="red") # regression line (y~x) 
   
   # Alt gene dN/dS estimate 2
   dSN.dSS.statistic <- dSN.mean/dSS.mean
