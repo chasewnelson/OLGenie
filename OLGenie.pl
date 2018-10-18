@@ -3770,16 +3770,763 @@ foreach my $sister1 (sort keys %sister_pairs) { # FOR EACH PAIR
 #############    ORF2: 3-2-1-3-2-1-3
 ##########################################################################################
 			} elsif($phase eq 'sas13') {
-				warn "\n### THIS PHASE IS NOT YET SUPPORTED! :'(\n\n";
-				last;
-				# EXACT OVERLAP (opposite strand)
-				my $codon_sister1_ORF2 = substr($product_seq_sister1, $site_index, 3);
-				$codon_sister1_ORF2 = &revcom($codon_sister1_ORF2);
-				my $codon_sister2_ORF2 = substr($product_seq_sister2, $site_index, 3);
-				$codon_sister2_ORF2 = &revcom($codon_sister2_ORF2);
+				
+				# EXACT OVERLAP (opposite strand). Always 3 sites to examine (first, middle, last codon)
+				my $codon_sister1_ORF2 = &revcom(substr($product_seq_sister1, $site_index, 3));
+				my $codon_sister2_ORF2 = &revcom(substr($product_seq_sister2, $site_index, 3));
+				
+				my $AA_sister1_ORF2 = &get_amino_acid($codon_sister1_ORF2);
+				my $AA_sister2_ORF2 = &get_amino_acid($codon_sister2_ORF2);
 				
 				
-			} 
+				#######################
+				# GET NUMBER OF SITES
+				my $sister1_num_changes_poss_site1 = 0;
+				my $sister1_num_changes_NN_site1 = 0;
+				my $sister1_num_changes_SN_site1 = 0;
+				my $sister1_num_changes_NS_site1 = 0;
+				my $sister1_num_changes_SS_site1 = 0;
+				
+				my $sister1_num_changes_poss_site2 = 0;
+				my $sister1_num_changes_NN_site2 = 0;
+				my $sister1_num_changes_SN_site2 = 0;
+				my $sister1_num_changes_NS_site2 = 0;
+				my $sister1_num_changes_SS_site2 = 0;
+				
+				my $sister1_num_changes_poss_site3 = 0;
+				my $sister1_num_changes_NN_site3 = 0;
+				my $sister1_num_changes_SN_site3 = 0;
+				my $sister1_num_changes_NS_site3 = 0;
+				my $sister1_num_changes_SS_site3 = 0;
+				
+				my $sister2_num_changes_poss_site1 = 0;
+				my $sister2_num_changes_NN_site1 = 0;
+				my $sister2_num_changes_SN_site1 = 0;
+				my $sister2_num_changes_NS_site1 = 0;
+				my $sister2_num_changes_SS_site1 = 0;
+				
+				my $sister2_num_changes_poss_site2 = 0;
+				my $sister2_num_changes_NN_site2 = 0;
+				my $sister2_num_changes_SN_site2 = 0;
+				my $sister2_num_changes_NS_site2 = 0;
+				my $sister2_num_changes_SS_site2 = 0;
+				
+				my $sister2_num_changes_poss_site3 = 0;
+				my $sister2_num_changes_NN_site3 = 0;
+				my $sister2_num_changes_SN_site3 = 0;
+				my $sister2_num_changes_NS_site3 = 0;
+				my $sister2_num_changes_SS_site3 = 0;
+				
+				my $NN_diffs = 0;
+				my $SN_diffs = 0;
+				my $NS_diffs = 0;
+				my $SS_diffs = 0;
+				
+				# Just ORF1 (reference)
+				my $nt1_sister1_WT = substr($codon_sister1_ORF1, 0, 1);
+				my $nt2_sister1_WT = substr($codon_sister1_ORF1, 1, 1);
+				my $nt3_sister1_WT = substr($codon_sister1_ORF1, 2, 1);
+				my $nt1_sister2_WT = substr($codon_sister2_ORF1, 0, 1);
+				my $nt2_sister2_WT = substr($codon_sister2_ORF1, 1, 1);
+				my $nt3_sister2_WT = substr($codon_sister2_ORF1, 2, 1);
+				
+				foreach my $nt (@nucleotides) {
+					my $nt_revcom = &revcom($nt);
+					
+					##################################################################
+					# SISTER1
+					
+					# SITE 1
+					# What is each change to ORF1 CODON SITE 1 / ORF2 CODON SITE 3?
+					if($nt ne $nt1_sister1_WT) { # only one possibility for this site
+						 # only one possibility for this site
+						
+						my $sister1_STOP_caused = 0;
+						
+						my $codon_sister1_ORF1_MUT = $codon_sister1_ORF1;
+						$codon_sister1_ORF1_MUT =~ s/[ACGT]([ACGT])([ACGT])/$nt$1$2/;
+						
+						my $codon_sister1_ORF2_MUT = $codon_sister1_ORF2;
+						$codon_sister1_ORF2_MUT =~ s/([ACGT])([ACGT])[ACGT]/$1$2$nt_revcom/;
+						
+						my $sister1_ORF1_effect = 'S';
+						
+						#Sister1-ORF1
+						my $AA_sister1_ORF1_MUT = &get_amino_acid($codon_sister1_ORF1_MUT);
+						
+						if($AA_sister1_ORF1_MUT ne $AA_sister1_ORF1) {
+							$sister1_ORF1_effect = 'N';
+						}
+						
+						if($AA_sister1_ORF1 eq '*' || $AA_sister1_ORF1_MUT eq '*') {
+							$sister1_STOP_caused++;
+						}
+						
+						
+						my $sister1_ORF2_effect = 'S';
+						
+						#Sister1-ORF2
+						my $AA_sister1_ORF2_MUT = &get_amino_acid($codon_sister1_ORF2_MUT);
+						
+						if($AA_sister1_ORF2_MUT ne $AA_sister1_ORF2) {
+							$sister1_ORF2_effect = 'N';
+						}
+						
+						if($AA_sister1_ORF2 eq '*' || $AA_sister1_ORF2_MUT eq '*') {
+							$sister1_STOP_caused++;
+						}
+						
+						# TALLY VIABLE CHANGES, GET NUMBER OF DIFFS
+			
+						unless($sister1_STOP_caused > 0) {
+							$sister1_num_changes_poss_site1++;
+							
+							if($sister1_ORF1_effect eq 'N') {
+								if($sister1_ORF2_effect eq 'N') {
+									$sister1_num_changes_NN_site1++;
+									
+									# ACTUAL DIFF
+									if($nt eq $nt1_sister2_WT) {
+										$NN_diffs++;
+										$site_diffs_hh{$codon_num}->{1}->{NN_diffs}++;
+									}
+									
+								} elsif($sister1_ORF2_effect eq 'S') {
+									$sister1_num_changes_NS_site1++;
+									
+									# ACTUAL DIFF
+									if($nt eq $nt1_sister2_WT) {
+										$NS_diffs++;
+										$site_diffs_hh{$codon_num}->{1}->{NS_diffs}++;
+									}
+								}
+							} elsif($sister1_ORF1_effect eq 'S') {
+								if($sister1_ORF2_effect eq 'N') {
+									$sister1_num_changes_SN_site1++;
+									
+									# ACTUAL DIFF
+									if($nt eq $nt1_sister2_WT) {
+										$SN_diffs++;
+										$site_diffs_hh{$codon_num}->{1}->{SN_diffs}++;
+									}
+								} elsif($sister1_ORF2_effect eq 'S') {
+									$sister1_num_changes_SS_site1++;
+									
+									# ACTUAL DIFF
+									if($nt eq $nt1_sister2_WT) {
+										$SS_diffs++;
+										$site_diffs_hh{$codon_num}->{1}->{SS_diffs}++;
+									}
+								}
+							}
+						}
+					} # end sister 1 site 1
+					
+					
+					# SITE 2
+					# What is each change to ORF1 CODON SITE 2 / ORF2 CODON SITE 2?
+					if($nt ne $nt2_sister1_WT) { # only one possibility for this site
+						
+						my $sister1_STOP_caused = 0;
+						
+						my $codon_sister1_ORF1_MUT = $codon_sister1_ORF1;
+						$codon_sister1_ORF1_MUT =~ s/([ACGT])[ACGT]([ACGT])/$1$nt$2/;
+						
+						my $codon_sister1_ORF2_MUT = $codon_sister1_ORF2;
+						$codon_sister1_ORF2_MUT =~ s/([ACGT])[ACGT]([ACGT])/$1$nt_revcom$2/;
+						
+						my $sister1_ORF1_effect = 'S';
+						
+						#Sister1-ORF1
+						my $AA_sister1_ORF1_MUT = &get_amino_acid($codon_sister1_ORF1_MUT);
+						
+						if($AA_sister1_ORF1_MUT ne $AA_sister1_ORF1) {
+							$sister1_ORF1_effect = 'N';
+						}
+						
+						if($AA_sister1_ORF1 eq '*' || $AA_sister1_ORF1_MUT eq '*') {
+							$sister1_STOP_caused++;
+						}
+						
+						
+						my $sister1_ORF2_effect = 'S';
+						
+						#Sister1-ORF2
+						my $AA_sister1_ORF2_MUT = &get_amino_acid($codon_sister1_ORF2_MUT);
+						
+						if($AA_sister1_ORF2_MUT ne $AA_sister1_ORF2) {
+							$sister1_ORF2_effect = 'N';
+						}
+						
+						if($AA_sister1_ORF2 eq '*' || $AA_sister1_ORF2_MUT eq '*') {
+							$sister1_STOP_caused++;
+						}
+						
+						# TALLY VIABLE CHANGES, GET NUMBER OF DIFFS
+			
+						unless($sister1_STOP_caused > 0) {
+							$sister1_num_changes_poss_site2++;
+							
+							if($sister1_ORF1_effect eq 'N') {
+								if($sister1_ORF2_effect eq 'N') {
+									$sister1_num_changes_NN_site2++;
+									
+									# ACTUAL DIFF
+									if($nt eq $nt2_sister2_WT) {
+										$NN_diffs++;
+										$site_diffs_hh{$codon_num}->{2}->{NN_diffs}++;
+									}
+									
+								} elsif($sister1_ORF2_effect eq 'S') {
+									$sister1_num_changes_NS_site2++;
+									
+									# ACTUAL DIFF
+									if($nt eq $nt2_sister2_WT) {
+										$NS_diffs++;
+										$site_diffs_hh{$codon_num}->{2}->{NS_diffs}++;
+									}
+								}
+							} elsif($sister1_ORF1_effect eq 'S') {
+								if($sister1_ORF2_effect eq 'N') {
+									$sister1_num_changes_SN_site2++;
+									
+									# ACTUAL DIFF
+									if($nt eq $nt2_sister2_WT) {
+										$SN_diffs++;
+										$site_diffs_hh{$codon_num}->{2}->{SN_diffs}++;
+									}
+								} elsif($sister1_ORF2_effect eq 'S') {
+									$sister1_num_changes_SS_site2++;
+									
+									# ACTUAL DIFF
+									if($nt eq $nt2_sister2_WT) {
+										$SS_diffs++;
+										$site_diffs_hh{$codon_num}->{2}->{SS_diffs}++;
+									}
+								}
+							}
+						}
+					} # end sister 1 site 2
+					
+					
+					# SITE 3
+					# What is each change to ORF1 CODON SITE 3 / ORF2 CODON SITE 1?
+					if($nt ne $nt3_sister1_WT) { # only one possibility for this site
+						
+						my $sister1_STOP_caused = 0;
+						
+						my $codon_sister1_ORF1_MUT = $codon_sister1_ORF1;
+						$codon_sister1_ORF1_MUT =~ s/([ACGT])([ACGT])[ACGT]/$1$2$nt/;
+						
+						my $codon_sister1_ORF2_MUT = $codon_sister1_ORF2;
+						$codon_sister1_ORF2_MUT =~ s/[ACGT]([ACGT])([ACGT])/$nt_revcom$1$2/;
+						
+						my $sister1_ORF1_effect = 'S';
+						
+						#Sister1-ORF1
+						my $AA_sister1_ORF1_MUT = &get_amino_acid($codon_sister1_ORF1_MUT);
+						
+						if($AA_sister1_ORF1_MUT ne $AA_sister1_ORF1) {
+							$sister1_ORF1_effect = 'N';
+						}
+						
+						if($AA_sister1_ORF1 eq '*' || $AA_sister1_ORF1_MUT eq '*') {
+							$sister1_STOP_caused++;
+						}
+						
+						
+						my $sister1_ORF2_effect = 'S';
+						
+						#Sister1-ORF2
+						my $AA_sister1_ORF2_MUT = &get_amino_acid($codon_sister1_ORF2_MUT);
+						
+						if($AA_sister1_ORF2_MUT ne $AA_sister1_ORF2) {
+							$sister1_ORF2_effect = 'N';
+						}
+						
+						if($AA_sister1_ORF2 eq '*' || $AA_sister1_ORF2_MUT eq '*') {
+							$sister1_STOP_caused++;
+						}
+						
+						# TALLY VIABLE CHANGES, GET NUMBER OF DIFFS
+			
+						unless($sister1_STOP_caused > 0) {
+							$sister1_num_changes_poss_site3++;
+							
+							if($sister1_ORF1_effect eq 'N') {
+								if($sister1_ORF2_effect eq 'N') {
+									$sister1_num_changes_NN_site3++;
+									
+									# ACTUAL DIFF
+									if($nt eq $nt3_sister2_WT) {
+										$NN_diffs++;
+										$site_diffs_hh{$codon_num}->{3}->{NN_diffs}++;
+									}
+									
+								} elsif($sister1_ORF2_effect eq 'S') {
+									$sister1_num_changes_NS_site3++;
+									
+									# ACTUAL DIFF
+									if($nt eq $nt3_sister2_WT) {
+										$NS_diffs++;
+										$site_diffs_hh{$codon_num}->{3}->{NS_diffs}++;
+									}
+								}
+							} elsif($sister1_ORF1_effect eq 'S') {
+								if($sister1_ORF2_effect eq 'N') {
+									$sister1_num_changes_SN_site3++;
+									
+									# ACTUAL DIFF
+									if($nt eq $nt3_sister2_WT) {
+										$SN_diffs++;
+										$site_diffs_hh{$codon_num}->{3}->{SN_diffs}++;
+									}
+								} elsif($sister1_ORF2_effect eq 'S') {
+									$sister1_num_changes_SS_site3++;
+									
+									# ACTUAL DIFF
+									if($nt eq $nt3_sister2_WT) {
+										$SS_diffs++;
+										$site_diffs_hh{$codon_num}->{3}->{SS_diffs}++;
+									}
+								}
+							}
+						}
+					} # end sister 1 site 3
+					
+					
+					
+					##################################################################
+					# SISTER2
+					
+					# SITE 1
+					# What is each change to ORF1 CODON SITE 1 / ORF2 CODON SITE 3?
+					if($nt ne $nt1_sister2_WT) { # only one possibility for this site
+						 # only one possibility for this site
+						
+						my $sister2_STOP_caused = 0;
+						
+						my $codon_sister2_ORF1_MUT = $codon_sister2_ORF1;
+						$codon_sister2_ORF1_MUT =~ s/[ACGT]([ACGT])([ACGT])/$nt$1$2/;
+						
+						my $codon_sister2_ORF2_MUT = $codon_sister2_ORF2;
+						$codon_sister2_ORF2_MUT =~ s/([ACGT])([ACGT])[ACGT]/$1$2$nt_revcom/;
+						
+						my $sister2_ORF1_effect = 'S';
+						
+						#Sister1-ORF1
+						my $AA_sister2_ORF1_MUT = &get_amino_acid($codon_sister2_ORF1_MUT);
+						
+						if($AA_sister2_ORF1_MUT ne $AA_sister2_ORF1) {
+							$sister2_ORF1_effect = 'N';
+						}
+						
+						if($AA_sister2_ORF1 eq '*' || $AA_sister2_ORF1_MUT eq '*') {
+							$sister2_STOP_caused++;
+						}
+						
+						
+						my $sister2_ORF2_effect = 'S';
+						
+						#Sister1-ORF2
+						my $AA_sister2_ORF2_MUT = &get_amino_acid($codon_sister2_ORF2_MUT);
+						
+						if($AA_sister2_ORF2_MUT ne $AA_sister2_ORF2) {
+							$sister2_ORF2_effect = 'N';
+						}
+						
+						if($AA_sister2_ORF2 eq '*' || $AA_sister2_ORF2_MUT eq '*') {
+							$sister2_STOP_caused++;
+						}
+						
+						# TALLY VIABLE CHANGES, GET NUMBER OF DIFFS
+			
+						unless($sister2_STOP_caused > 0) {
+							$sister2_num_changes_poss_site1++;
+							
+							if($sister2_ORF1_effect eq 'N') {
+								if($sister2_ORF2_effect eq 'N') {
+									$sister2_num_changes_NN_site1++;
+									
+									
+								} elsif($sister2_ORF2_effect eq 'S') {
+									$sister2_num_changes_NS_site1++;
+									
+								}
+							} elsif($sister2_ORF1_effect eq 'S') {
+								if($sister2_ORF2_effect eq 'N') {
+									$sister2_num_changes_SN_site1++;
+									
+								} elsif($sister2_ORF2_effect eq 'S') {
+									$sister2_num_changes_SS_site1++;
+									
+								}
+							}
+						}
+					} # end sister 2 site 1
+					
+					
+					
+					
+					
+					# SITE 2
+					# What is each change to ORF1 CODON SITE 2 / ORF2 CODON SITE 2?
+					if($nt ne $nt2_sister2_WT) { # only one possibility for this site
+						
+						my $sister2_STOP_caused = 0;
+						
+						my $codon_sister2_ORF1_MUT = $codon_sister2_ORF1;
+						$codon_sister2_ORF1_MUT =~ s/([ACGT])[ACGT]([ACGT])/$1$nt$2/;
+						
+						my $codon_sister2_ORF2_MUT = $codon_sister2_ORF2;
+						$codon_sister2_ORF2_MUT =~ s/([ACGT])[ACGT]([ACGT])/$1$nt_revcom$2/;
+						
+						my $sister2_ORF1_effect = 'S';
+						
+						#Sister1-ORF1
+						my $AA_sister2_ORF1_MUT = &get_amino_acid($codon_sister2_ORF1_MUT);
+						
+						if($AA_sister2_ORF1_MUT ne $AA_sister2_ORF1) {
+							$sister2_ORF1_effect = 'N';
+						}
+						
+						if($AA_sister2_ORF1 eq '*' || $AA_sister2_ORF1_MUT eq '*') {
+							$sister2_STOP_caused++;
+						}
+						
+						
+						my $sister2_ORF2_effect = 'S';
+						
+						#Sister1-ORF2
+						my $AA_sister2_ORF2_MUT = &get_amino_acid($codon_sister2_ORF2_MUT);
+						
+						if($AA_sister2_ORF2_MUT ne $AA_sister2_ORF2) {
+							$sister2_ORF2_effect = 'N';
+						}
+						
+						if($AA_sister2_ORF2 eq '*' || $AA_sister2_ORF2_MUT eq '*') {
+							$sister2_STOP_caused++;
+						}
+						
+						# TALLY VIABLE CHANGES, GET NUMBER OF DIFFS
+			
+						unless($sister2_STOP_caused > 0) {
+							$sister2_num_changes_poss_site2++;
+							
+							if($sister2_ORF1_effect eq 'N') {
+								if($sister2_ORF2_effect eq 'N') {
+									$sister2_num_changes_NN_site2++;
+									
+								} elsif($sister2_ORF2_effect eq 'S') {
+									$sister2_num_changes_NS_site2++;
+									
+								}
+							} elsif($sister2_ORF1_effect eq 'S') {
+								if($sister2_ORF2_effect eq 'N') {
+									$sister2_num_changes_SN_site2++;
+									
+								} elsif($sister2_ORF2_effect eq 'S') {
+									$sister2_num_changes_SS_site2++;
+									
+								}
+							}
+						}
+					} # end sister 2 site 2
+					
+					
+					# SITE 3
+					# What is each change to ORF1 CODON SITE 3 / ORF2 CODON SITE 1?
+					if($nt ne $nt3_sister2_WT) { # only one possibility for this site
+						
+						my $sister2_STOP_caused = 0;
+						
+						my $codon_sister2_ORF1_MUT = $codon_sister2_ORF1;
+						$codon_sister2_ORF1_MUT =~ s/([ACGT])([ACGT])[ACGT]/$1$2$nt/;
+						
+						my $codon_sister2_ORF2_MUT = $codon_sister2_ORF2;
+						$codon_sister2_ORF2_MUT =~ s/[ACGT]([ACGT])([ACGT])/$nt_revcom$1$2/;
+						
+						my $sister2_ORF1_effect = 'S';
+						
+						#sister2-ORF1
+						my $AA_sister2_ORF1_MUT = &get_amino_acid($codon_sister2_ORF1_MUT);
+						
+						if($AA_sister2_ORF1_MUT ne $AA_sister2_ORF1) {
+							$sister2_ORF1_effect = 'N';
+						}
+						
+						if($AA_sister2_ORF1 eq '*' || $AA_sister2_ORF1_MUT eq '*') {
+							$sister2_STOP_caused++;
+						}
+						
+						
+						my $sister2_ORF2_effect = 'S';
+						
+						#sister2-ORF2
+						my $AA_sister2_ORF2_MUT = &get_amino_acid($codon_sister2_ORF2_MUT);
+						
+						if($AA_sister2_ORF2_MUT ne $AA_sister2_ORF2) {
+							$sister2_ORF2_effect = 'N';
+						}
+						
+						if($AA_sister2_ORF2 eq '*' || $AA_sister2_ORF2_MUT eq '*') {
+							$sister2_STOP_caused++;
+						}
+						
+						# TALLY VIABLE CHANGES, GET NUMBER OF DIFFS
+			
+						unless($sister2_STOP_caused > 0) {
+							$sister2_num_changes_poss_site3++;
+							
+							if($sister2_ORF1_effect eq 'N') {
+								if($sister2_ORF2_effect eq 'N') {
+									$sister2_num_changes_NN_site3++;
+									
+								} elsif($sister2_ORF2_effect eq 'S') {
+									$sister2_num_changes_NS_site3++;
+									
+								}
+							} elsif($sister2_ORF1_effect eq 'S') {
+								if($sister2_ORF2_effect eq 'N') {
+									$sister2_num_changes_SN_site3++;
+									
+								} elsif($sister2_ORF2_effect eq 'S') {
+									$sister2_num_changes_SS_site3++;
+									
+								}
+							}
+						}
+					} # end sister 2 site 3
+				} # end cycling all 4 nucleotides
+				
+				# TALLY SITE 1
+				my $NN_sites_sister1_site1 = 'NA';
+				my $SN_sites_sister1_site1 = 'NA';
+				my $NS_sites_sister1_site1 = 'NA';
+				my $SS_sites_sister1_site1 = 'NA';
+				if($sister1_num_changes_poss_site1 > 0) {
+					$NN_sites_sister1_site1 = $sister1_num_changes_NN_site1 / $sister1_num_changes_poss_site1;
+					$SN_sites_sister1_site1 = $sister1_num_changes_SN_site1 / $sister1_num_changes_poss_site1;
+					$NS_sites_sister1_site1 = $sister1_num_changes_NS_site1 / $sister1_num_changes_poss_site1;
+					$SS_sites_sister1_site1 = $sister1_num_changes_SS_site1 / $sister1_num_changes_poss_site1;
+					
+					unless(exists $seq_completed{$sister1}) {
+						$seq2sites{$sister1}->{NN_sites} += $NN_sites_sister1_site1;
+						$seq2sites{$sister1}->{SN_sites} += $SN_sites_sister1_site1;
+						$seq2sites{$sister1}->{NS_sites} += $NS_sites_sister1_site1;
+						$seq2sites{$sister1}->{SS_sites} += $SS_sites_sister1_site1;
+					}
+				}
+				
+				my $NN_sites_sister2_site1 = 'NA';
+				my $SN_sites_sister2_site1 = 'NA';
+				my $NS_sites_sister2_site1 = 'NA';
+				my $SS_sites_sister2_site1 = 'NA';
+				if($sister2_num_changes_poss_site1 > 0) {
+					$NN_sites_sister2_site1 = $sister2_num_changes_NN_site1 / $sister2_num_changes_poss_site1;
+					$SN_sites_sister2_site1 = $sister2_num_changes_SN_site1 / $sister2_num_changes_poss_site1;
+					$NS_sites_sister2_site1 = $sister2_num_changes_NS_site1 / $sister2_num_changes_poss_site1;
+					$SS_sites_sister2_site1 = $sister2_num_changes_SS_site1 / $sister2_num_changes_poss_site1;
+					
+					unless(exists $seq_completed{$sister2}) {
+						$seq2sites{$sister2}->{NN_sites} += $NN_sites_sister2_site1;
+						$seq2sites{$sister2}->{SN_sites} += $SN_sites_sister2_site1;
+						$seq2sites{$sister2}->{NS_sites} += $NS_sites_sister2_site1;
+						$seq2sites{$sister2}->{SS_sites} += $SS_sites_sister2_site1;
+					}
+				}
+				
+				my $NN_sites_site1 = 'NA';
+				my $SN_sites_site1 = 'NA';
+				my $NS_sites_site1 = 'NA';
+				my $SS_sites_site1 = 'NA';
+				if($sister1_num_changes_poss_site1 > 0 && $sister2_num_changes_poss_site1 > 0) {
+					$NN_sites_site1 = ($NN_sites_sister1_site1 + $NN_sites_sister2_site1) / 2;
+					$SN_sites_site1 = ($SN_sites_sister1_site1 + $SN_sites_sister2_site1) / 2;
+					$NS_sites_site1 = ($NS_sites_sister1_site1 + $NS_sites_sister2_site1) / 2;
+					$SS_sites_site1 = ($SS_sites_sister1_site1 + $SS_sites_sister2_site1) / 2;
+				} elsif($sister1_num_changes_poss_site1 > 0) {
+					$NN_sites_site1 = $NN_sites_sister1_site1;
+					$SN_sites_site1 = $SN_sites_sister1_site1;
+					$NS_sites_site1 = $NS_sites_sister1_site1;
+					$SS_sites_site1 = $SS_sites_sister1_site1;
+				} elsif($sister2_num_changes_poss_site1 > 0) {
+					$NN_sites_site1 = $NN_sites_sister2_site1;
+					$SN_sites_site1 = $SN_sites_sister2_site1;
+					$NS_sites_site1 = $NS_sites_sister2_site1;
+					$SS_sites_site1 = $SS_sites_sister2_site1;
+					
+				} # else nothing defined, stay NA
+				
+				# TALLY SITE 2
+				my $NN_sites_sister1_site2 = 'NA';
+				my $SN_sites_sister1_site2 = 'NA';
+				my $NS_sites_sister1_site2 = 'NA';
+				my $SS_sites_sister1_site2 = 'NA';
+				if($sister1_num_changes_poss_site2 > 0) {
+					$NN_sites_sister1_site2 = $sister1_num_changes_NN_site2 / $sister1_num_changes_poss_site2;
+					$SN_sites_sister1_site2 = $sister1_num_changes_SN_site2 / $sister1_num_changes_poss_site2;
+					$NS_sites_sister1_site2 = $sister1_num_changes_NS_site2 / $sister1_num_changes_poss_site2;
+					$SS_sites_sister1_site2 = $sister1_num_changes_SS_site2 / $sister1_num_changes_poss_site2;
+					
+					unless(exists $seq_completed{$sister1}) {
+						$seq2sites{$sister1}->{NN_sites} += $NN_sites_sister1_site2;
+						$seq2sites{$sister1}->{SN_sites} += $SN_sites_sister1_site2;
+						$seq2sites{$sister1}->{NS_sites} += $NS_sites_sister1_site2;
+						$seq2sites{$sister1}->{SS_sites} += $SS_sites_sister1_site2;
+					}
+				}
+				
+				my $NN_sites_sister2_site2 = 'NA';
+				my $SN_sites_sister2_site2 = 'NA';
+				my $NS_sites_sister2_site2 = 'NA';
+				my $SS_sites_sister2_site2 = 'NA';
+				if($sister2_num_changes_poss_site2 > 0) {
+					$NN_sites_sister2_site2 = $sister2_num_changes_NN_site2 / $sister2_num_changes_poss_site2;
+					$SN_sites_sister2_site2 = $sister2_num_changes_SN_site2 / $sister2_num_changes_poss_site2;
+					$NS_sites_sister2_site2 = $sister2_num_changes_NS_site2 / $sister2_num_changes_poss_site2;
+					$SS_sites_sister2_site2 = $sister2_num_changes_SS_site2 / $sister2_num_changes_poss_site2;
+					
+					unless(exists $seq_completed{$sister2}) {
+						$seq2sites{$sister2}->{NN_sites} += $NN_sites_sister2_site2;
+						$seq2sites{$sister2}->{SN_sites} += $SN_sites_sister2_site2;
+						$seq2sites{$sister2}->{NS_sites} += $NS_sites_sister2_site2;
+						$seq2sites{$sister2}->{SS_sites} += $SS_sites_sister2_site2;
+					}
+				}
+				
+				my $NN_sites_site2 = 'NA';
+				my $SN_sites_site2 = 'NA';
+				my $NS_sites_site2 = 'NA';
+				my $SS_sites_site2 = 'NA';
+				if($sister1_num_changes_poss_site2 > 0 && $sister2_num_changes_poss_site2 > 0) {
+					$NN_sites_site2 = ($NN_sites_sister1_site2 + $NN_sites_sister2_site2) / 2;
+					$SN_sites_site2 = ($SN_sites_sister1_site2 + $SN_sites_sister2_site2) / 2;
+					$NS_sites_site2 = ($NS_sites_sister1_site2 + $NS_sites_sister2_site2) / 2;
+					$SS_sites_site2 = ($SS_sites_sister1_site2 + $SS_sites_sister2_site2) / 2;
+				} elsif($sister1_num_changes_poss_site2 > 0) {
+					$NN_sites_site2 = $NN_sites_sister1_site2;
+					$SN_sites_site2 = $SN_sites_sister1_site2;
+					$NS_sites_site2 = $NS_sites_sister1_site2;
+					$SS_sites_site2 = $SS_sites_sister1_site2;
+				} elsif($sister2_num_changes_poss_site2 > 0) {
+					$NN_sites_site2 = $NN_sites_sister2_site2;
+					$SN_sites_site2 = $SN_sites_sister2_site2;
+					$NS_sites_site2 = $NS_sites_sister2_site2;
+					$SS_sites_site2 = $SS_sites_sister2_site2;
+					
+				} # else nothing defined, stay NA
+				
+				# TALLY SITE 3
+				my $NN_sites_sister1_site3 = 'NA';
+				my $SN_sites_sister1_site3 = 'NA';
+				my $NS_sites_sister1_site3 = 'NA';
+				my $SS_sites_sister1_site3 = 'NA';
+				if($sister1_num_changes_poss_site3 > 0) {
+					$NN_sites_sister1_site3 = $sister1_num_changes_NN_site3 / $sister1_num_changes_poss_site3;
+					$SN_sites_sister1_site3 = $sister1_num_changes_SN_site3 / $sister1_num_changes_poss_site3;
+					$NS_sites_sister1_site3 = $sister1_num_changes_NS_site3 / $sister1_num_changes_poss_site3;
+					$SS_sites_sister1_site3 = $sister1_num_changes_SS_site3 / $sister1_num_changes_poss_site3;
+					
+					unless(exists $seq_completed{$sister1}) {
+						$seq2sites{$sister1}->{NN_sites} += $NN_sites_sister1_site3;
+						$seq2sites{$sister1}->{SN_sites} += $SN_sites_sister1_site3;
+						$seq2sites{$sister1}->{NS_sites} += $NS_sites_sister1_site3;
+						$seq2sites{$sister1}->{SS_sites} += $SS_sites_sister1_site3;
+					}
+				}
+				
+				my $NN_sites_sister2_site3 = 'NA';
+				my $SN_sites_sister2_site3 = 'NA';
+				my $NS_sites_sister2_site3 = 'NA';
+				my $SS_sites_sister2_site3 = 'NA';
+				if($sister2_num_changes_poss_site3 > 0) {
+					$NN_sites_sister2_site3 = $sister2_num_changes_NN_site3 / $sister2_num_changes_poss_site3;
+					$SN_sites_sister2_site3 = $sister2_num_changes_SN_site3 / $sister2_num_changes_poss_site3;
+					$NS_sites_sister2_site3 = $sister2_num_changes_NS_site3 / $sister2_num_changes_poss_site3;
+					$SS_sites_sister2_site3 = $sister2_num_changes_SS_site3 / $sister2_num_changes_poss_site3;
+					
+					unless(exists $seq_completed{$sister2}) {
+						$seq2sites{$sister2}->{NN_sites} += $NN_sites_sister2_site3;
+						$seq2sites{$sister2}->{SN_sites} += $SN_sites_sister2_site3;
+						$seq2sites{$sister2}->{NS_sites} += $NS_sites_sister2_site3;
+						$seq2sites{$sister2}->{SS_sites} += $SS_sites_sister2_site3;
+					}
+				}
+				
+				my $NN_sites_site3 = 'NA';
+				my $SN_sites_site3 = 'NA';
+				my $NS_sites_site3 = 'NA';
+				my $SS_sites_site3 = 'NA';
+				if($sister1_num_changes_poss_site3 > 0 && $sister2_num_changes_poss_site3 > 0) {
+					$NN_sites_site3 = ($NN_sites_sister1_site3 + $NN_sites_sister2_site3) / 2;
+					$SN_sites_site3 = ($SN_sites_sister1_site3 + $SN_sites_sister2_site3) / 2;
+					$NS_sites_site3 = ($NS_sites_sister1_site3 + $NS_sites_sister2_site3) / 2;
+					$SS_sites_site3 = ($SS_sites_sister1_site3 + $SS_sites_sister2_site3) / 2;
+				} elsif($sister1_num_changes_poss_site3 > 0) {
+					$NN_sites_site3 = $NN_sites_sister1_site3;
+					$SN_sites_site3 = $SN_sites_sister1_site3;
+					$NS_sites_site3 = $NS_sites_sister1_site3;
+					$SS_sites_site3 = $SS_sites_sister1_site3;
+				} elsif($sister2_num_changes_poss_site3 > 0) {
+					$NN_sites_site3 = $NN_sites_sister2_site3;
+					$SN_sites_site3 = $SN_sites_sister2_site3;
+					$NS_sites_site3 = $NS_sites_sister2_site3;
+					$SS_sites_site3 = $SS_sites_sister2_site3;
+					
+				} # else nothing defined, stay NA
+				
+				# SUM THE THREE SITES
+				my $NN_sites = $NN_sites_site1 + $NN_sites_site2 + $NN_sites_site3;
+				my $SN_sites = $SN_sites_site1 + $SN_sites_site2 + $SN_sites_site3;
+				my $NS_sites = $NS_sites_site1 + $NS_sites_site2 + $NS_sites_site3;
+				my $SS_sites = $SS_sites_site1 + $SS_sites_site2 + $SS_sites_site3;
+				
+				
+				# Check if there are multiple variants in these overlapping codons
+				my $MNV = 'FALSE';
+				if(($NN_diffs + $SN_diffs + $NS_diffs + $SS_diffs) > 1) {
+					$MNV = 'TRUE';
+				}
+				
+				print CODON_FILE "$fasta_file_short\t$tree_file_short\t$pair_num\t$sister1\t$sister2\t" .
+					"$pair_bootstrap\t$codon_num\t" .
+					"$codon_sister1_ORF1\t$codon_sister2_ORF1\t" .
+					"$codon_sister1_ORF2\t" . 
+					"$codon_sister2_ORF2\t" .
+					"$MNV\t" .
+					"$NN_sites\t$SN_sites\t$NS_sites\t$SS_sites\t$NN_diffs\t$SN_diffs\t$NS_diffs\t$SS_diffs\n";
+				
+				unless($MNV eq 'TRUE') { # exclude data from overlapping codons with multiple variants
+					# Store sites
+					$sister_data_hh{$pair_num}->{NN_sites} += $NN_sites;
+					$sister_data_hh{$pair_num}->{SN_sites} += $SN_sites;
+					$sister_data_hh{$pair_num}->{NS_sites} += $NS_sites;
+					$sister_data_hh{$pair_num}->{SS_sites} += $SS_sites;
+					
+					# Store diffs
+					$sister_data_hh{$pair_num}->{NN_diffs} += $NN_diffs;
+					$sister_data_hh{$pair_num}->{SN_diffs} += $SN_diffs;
+					$sister_data_hh{$pair_num}->{NS_diffs} += $NS_diffs;
+					$sister_data_hh{$pair_num}->{SS_diffs} += $SS_diffs;
+					
+				} else {
+					$site_diffs_hh{$codon_num}->{1}->{NN_diffs} = 0;
+					$site_diffs_hh{$codon_num}->{1}->{SN_diffs} = 0;
+					$site_diffs_hh{$codon_num}->{1}->{NS_diffs} = 0;
+					$site_diffs_hh{$codon_num}->{1}->{SS_diffs} = 0;
+					
+					$site_diffs_hh{$codon_num}->{2}->{NN_diffs} = 0;
+					$site_diffs_hh{$codon_num}->{2}->{SN_diffs} = 0;
+					$site_diffs_hh{$codon_num}->{2}->{NS_diffs} = 0;
+					$site_diffs_hh{$codon_num}->{2}->{SS_diffs} = 0;
+					
+					$site_diffs_hh{$codon_num}->{3}->{NN_diffs} = 0;
+					$site_diffs_hh{$codon_num}->{3}->{SN_diffs} = 0;
+					$site_diffs_hh{$codon_num}->{3}->{NS_diffs} = 0;
+					$site_diffs_hh{$codon_num}->{3}->{SS_diffs} = 0;
+				}
+			} # end sas13 
 		} # end case in which each sister's ORF1 codon is FULLY DEFINED
 		
 		
