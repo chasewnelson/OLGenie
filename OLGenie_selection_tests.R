@@ -21,8 +21,8 @@
 ######################################## <-----
 ######################################## <-----
 ### *ENTER YOUR OWN FILE PATHS HERE* ### <-----
-OLGenie_results <- read.delim("/Users/cwnelson88/Desktop/OLG/reolgexampleswhataboutthis/data/sas12/NC_004913.3_57797_57525_sas12/OLGenie_results.txt", header = TRUE)#OLGenie_results <- read.delim("/Users/cwnelson88/Desktop/OLG/simulations/sas12/dist_0.1_dnds1_0.5_dnds2_1_R_1/bootstrap_90/OLGenie_results.txt", header = TRUE)
-OLGenie_pair_results <- read.delim("/Users/cwnelson88/Desktop/OLG/reolgexampleswhataboutthis/data/sas12/NC_004913.3_57797_57525_sas12/OLGenie_pair_results.txt", header = TRUE)
+OLGenie_results <- read.delim("/Users/cwnelson88/Desktop/OLG/ex_20190110/OLGenie_results.txt", header = TRUE)#OLGenie_results <- read.delim("/Users/cwnelson88/Desktop/OLG/simulations/sas12/dist_0.1_dnds1_0.5_dnds2_1_R_1/bootstrap_90/OLGenie_results.txt", header = TRUE)
+OLGenie_pair_results <- read.delim("/Users/cwnelson88/Desktop/OLG/ex_20190110/OLGenie_pair_results.txt", header = TRUE)
 ######################################## <-----
 ######################################## <-----
 
@@ -87,8 +87,8 @@ input_table <- c(NN_diffs, SN_diffs, NN_no_diffs, SN_no_diffs)
 (input_table <- matrix(input_table, nrow = 2, ncol = 2, byrow = T, dimnames = list(c('DIFFS', 'NO_DIFFS'), c('NN', 'SN'))))
 
 # Three possible tests
-(dNNdSN_Fisher_P <- fisher.test(input_table, alternative = "two.sided"))
-(dNNdSN_Binomial_P <- binom.test(x = round(NN_diffs), n = round(NN_diffs + SN_diffs), p = (NN_sites / (NN_sites + SN_sites))))
+## (dNNdSN_Fisher_P <- fisher.test(input_table, alternative = "two.sided"))
+## (dNNdSN_Binomial_P <- binom.test(x = round(NN_diffs), n = round(NN_diffs + SN_diffs), p = (NN_sites / (NN_sites + SN_sites))))
 (dNNdSN_Wilcoxon_P <- wilcox.test(x = OLGenie_pair_results$pNN, y = OLGenie_pair_results$pSN, paired = T))
 #t.test(x = OLGenie_pair_results$pNN, y = OLGenie_pair_results$pSN, paired = T)
 
@@ -98,8 +98,8 @@ input_table <- c(NS_diffs, SS_diffs, NS_no_diffs, SS_no_diffs)
 (input_table <- matrix(input_table, nrow = 2, ncol = 2, byrow = T, dimnames = list(c('DIFFS', 'NO_DIFFS'), c('NS', 'SS'))))
 
 # Three possible tests
-(dNSdSS_Fisher_P <- fisher.test(input_table, alternative = "two.sided"))
-(dNSdSS_Binomial_P <- binom.test(x = round(NS_diffs), n = round(NS_diffs + SS_diffs), p = (NS_sites / (NS_sites + SS_sites))))
+## (dNSdSS_Fisher_P <- fisher.test(input_table, alternative = "two.sided"))
+## (dNSdSS_Binomial_P <- binom.test(x = round(NS_diffs), n = round(NS_diffs + SS_diffs), p = (NS_sites / (NS_sites + SS_sites))))
 (dNSdSS_Wilcoxon_P <- wilcox.test(x = OLGenie_pair_results$pNS, y = OLGenie_pair_results$pSS, paired = T))
 #t.test(x = OLGenie_pair_results$pNS, y = OLGenie_pair_results$pSS, paired = T)
 
@@ -110,8 +110,8 @@ input_table <- c(NN_diffs, NS_diffs, NN_no_diffs, NS_no_diffs)
 (input_table <- matrix(input_table, nrow = 2, ncol = 2, byrow = T, dimnames = list(c('DIFFS', 'NO_DIFFS'), c('NN', 'NS'))))
 
 # Three possible tests
-(dNNdNS_Fisher_P <- fisher.test(input_table, alternative = "two.sided")) # P=0.2949, methinks it is better
-(dNNdNS_Binomial_P <- binom.test(x = round(NN_diffs), n = round(NN_diffs + NS_diffs), p = (NN_sites / (NN_sites + NS_sites))))
+## (dNNdNS_Fisher_P <- fisher.test(input_table, alternative = "two.sided")) # P=0.2949, methinks it is better
+## (dNNdNS_Binomial_P <- binom.test(x = round(NN_diffs), n = round(NN_diffs + NS_diffs), p = (NN_sites / (NN_sites + NS_sites))))
 (dNNdNS_Wilcoxon_P <- wilcox.test(x = OLGenie_pair_results$pNN, y = OLGenie_pair_results$pNS, paired = T))
 #t.test(x = OLGenie_pair_results$pNN, y = OLGenie_pair_results$pNS, paired = T)
 
@@ -122,8 +122,8 @@ input_table <- c(SN_diffs, SS_diffs, SN_no_diffs, SS_no_diffs)
 (input_table <- matrix(input_table, nrow = 2, ncol = 2, byrow = T, dimnames = list(c('DIFFS', 'NO_DIFFS'), c('SN', 'SS'))))
 
 # Three possible tests
-(dSNdSS_Fisher_P <- fisher.test(input_table, alternative = "two.sided")) # P=0.2949, methinks it is better
-(dSNdSS_Binomial_P <- binom.test(x = round(SN_diffs), n = round(SN_diffs + SS_diffs), p = (SN_sites / (SN_sites + SS_sites))))
+## (dSNdSS_Fisher_P <- fisher.test(input_table, alternative = "two.sided")) # P=0.2949, methinks it is better
+## (dSNdSS_Binomial_P <- binom.test(x = round(SN_diffs), n = round(SN_diffs + SS_diffs), p = (SN_sites / (SN_sites + SS_sites))))
 (dSNdSS_Wilcoxon_P <- wilcox.test(x = OLGenie_pair_results$pSN, y = OLGenie_pair_results$pSS, paired = T))
 #t.test(x = OLGenie_pair_results$pSN, y = OLGenie_pair_results$pSS, paired = T)
 
@@ -148,6 +148,20 @@ input_table <- c(SN_diffs, SS_diffs, SN_no_diffs, SS_no_diffs)
 #    'dSNdSS_Fisher_P$p.value', 'dSNdSS_Binomial_P$p.value', 'dSNdSS_Wilcoxon_P$p.value',
 #    sep = "\t")
 
+## # DATA
+## cat(num_pairs,
+##     NN_sites, SN_sites, NS_sites, SS_sites,
+##     CORRECTED,
+##     NN_diffs, SN_diffs, NS_diffs, SS_diffs,
+##     NN_no_diffs, SN_no_diffs, NS_no_diffs, SS_no_diffs,
+##     dNN, dSN, dNS, dSS,
+##     dNNdSN, dNSdSS, dNNdNS, dSNdSS, 
+##     dNNdSN_Fisher_P$p.value, dNNdSN_Binomial_P$p.value, dNNdSN_Wilcoxon_P$p.value,
+##     dNSdSS_Fisher_P$p.value, dNSdSS_Binomial_P$p.value, dNSdSS_Wilcoxon_P$p.value,
+##     dNNdNS_Fisher_P$p.value, dNNdNS_Binomial_P$p.value, dNNdNS_Wilcoxon_P$p.value,
+##     dSNdSS_Fisher_P$p.value, dSNdSS_Binomial_P$p.value, dSNdSS_Wilcoxon_P$p.value,
+##     sep = "\t")
+
 # DATA
 cat(num_pairs,
     NN_sites, SN_sites, NS_sites, SS_sites,
@@ -156,10 +170,10 @@ cat(num_pairs,
     NN_no_diffs, SN_no_diffs, NS_no_diffs, SS_no_diffs,
     dNN, dSN, dNS, dSS,
     dNNdSN, dNSdSS, dNNdNS, dSNdSS, 
-    dNNdSN_Fisher_P$p.value, dNNdSN_Binomial_P$p.value, dNNdSN_Wilcoxon_P$p.value,
-    dNSdSS_Fisher_P$p.value, dNSdSS_Binomial_P$p.value, dNSdSS_Wilcoxon_P$p.value,
-    dNNdNS_Fisher_P$p.value, dNNdNS_Binomial_P$p.value, dNNdNS_Wilcoxon_P$p.value,
-    dSNdSS_Fisher_P$p.value, dSNdSS_Binomial_P$p.value, dSNdSS_Wilcoxon_P$p.value,
+    dNNdSN_Wilcoxon_P$p.value,
+    dNSdSS_Wilcoxon_P$p.value,
+    dNNdNS_Wilcoxon_P$p.value,
+    dSNdSS_Wilcoxon_P$p.value,
     sep = "\t")
 
 
