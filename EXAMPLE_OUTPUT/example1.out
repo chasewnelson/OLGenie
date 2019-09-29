@@ -1,0 +1,68 @@
+
+################################################################################
+##                                                                            ##
+##                           Naive OLGenie Initiated!                         ##
+##                                                                            ##
+################################################################################
+
+OLGenie initiated at local time Sun Sep 29 18:33:14 2019
+
+################################################################################
+Recording coding sequence data for HIV1_env_BLAST.fa...
+
+################################################################################
+Analyzing overlapping gene in frame sas12...
+
+
+################################################################################
+ANALYZING ALL UNIQUE SEQUENCE PAIRS
+
+
+#########################################################################################
+##################################### DATASET TOTALS ####################################
+#########################################################################################
+
+(1) Mean numbers of sites and differences:
+NN_sites=1747.662
+SN_sites=161.498
+NS_sites=217.404
+SS_sites=408.342
+NN_diffs=387.502
+SN_diffs=31.430
+NS_diffs=44.000
+SS_diffs=98.348
+
+(2) Mean substitution rates (between-species) or nucleotide diversities (within-species):
+dNN=0.221726
+dSN=0.194615
+dNS=0.202388
+dSS=0.240848
+
+(3) dN/dS estimates:
+For the REFERENCE gene (ORF1):
+dNN/dSN=1.139
+dNS/dSS=0.840
+
+For the ALTERNATE gene (ORF2):
+dNN/dNS=1.096
+dSN/dSS=0.808
+
+(4) NOTES:
+-Values have been rounded to 3 or 6 decimal places.
+-NaN indicates undefined (Not a Number) values (division by 0).
+-To test for significance, please bootstrap OLGenie_codon_results.txt using OLGenie_bootstrap.R.
+	For example, at the command line:
+
+$ OLGenie_bootstrap.R OLGenie_codon_results.txt > OLGenie_test_results.txt
+
+
+#########################################################################################
+
+OLGenie completed at local time Sun Sep 29 18:33:50 2019. The process took 36.00 secs, i.e., 0 mins and 36.00 secs
+
+################################################################################
+##                      OLGenie completed successfully.                       ##
+##                Please find results in the working directory.               ##
+################################################################################
+
+
