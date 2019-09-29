@@ -27,7 +27,7 @@ Find some real [examples](#examples) below. Check out our <a target="_blank" rel
 ## <a name="description"></a>Description
 Given the codon triplet basis of the genetic code, and the two antiparallel strands of the DNA molecule, a single segment of DNA has the potential to encode six reading frames: three in the forward (sense) direction and three in the reverse (antisense) direction. This allows for the possibility that two or more genes may overlap the same nucleotide positions in a genome. Indeed, a substantial fraction of genes in taxa ranging from viruses to humans may encode overlapping gene (**OLG**) pairs, running in either the same (**ss**; sense-sense) or opposite (**sas**; sense-antisense) directions (*e.g.*, see Pavesi *et al.* 2018 and Sabath 2009). We use the nomenclature of Wei and Zhang (2015), referring to these overlapping frames as ss12, ss13, sas11, sas12, or sas13, where the first number refers to the codon position in the reference gene (ORF1), and the second number refers to the codon position in the alternative (overlapping) gene (ORF2):
 
-<img src="https://github.com/chasewnelson/OLGenie/blob/master/OLGs_all_frames.png" alt="sas12 logo" align="middle" width="400px">
+<img src="https://github.com/chasewnelson/OLGenie/blob/master/OLGs_all_frames.png" alt="sas12 logo" align="middle">
 
 For example, in sas12, genes overlap in a sense-antisense relationship such that position 1 of codons in the sense (reference) gene correspond to position 2 of codons in the reverse strand (overlapping; alternative) gene. In other words, the sense gene's first codon position overlaps the antisense gene's second codon position:
 	
