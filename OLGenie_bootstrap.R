@@ -1,30 +1,19 @@
 #! /usr/local/bin/Rscript --slave --no-restore --no-save
-# /usr/local/software/R/R-3.4.1/bin/R --slave --no-restore --no-save
-# /usr/local/bin/Rscript --slave --no-restore --no-save
-# /usr/local/software/R/R-3.4.1/bin/R
 
 ############################################################################################################
 # OLGenie process codon results to bootstrap
-#install.packages(pkgs = 'tidyverse', lib = '/home/cnelson/R_packages', repos = 'https://cloud.r-project.org')
-#install.packages(pkgs = 'boot', lib = '/home/cnelson/R_packages',  repos = 'https://cloud.r-project.org')
 
 # Mac
 suppressMessages(library(package = tidyverse))
 suppressMessages(library(package = boot))
 
-# Huxley
-#suppressMessages(library(package = readr, lib.loc = '/home/cnelson/R_packages'))
-#suppressMessages(library(package = boot, lib.loc = '/home/cnelson/R_packages'))
-
-# At command line, called something like:
+# At command line, call something like:
 # Rscript --quiet --no-restore --no-save script_file.R arg1 arg2 arg3 > results.out
 # Rscript --slave --quiet --no-restore --no-save OLGenie_process_codons_batch.R OLGenie_codon_results.txt 10000 > OLGenie_results.out
 
 # Gather command-line arguments
 argv <- commandArgs(trailingOnly = T)
-codon_results_file <- as.character(argv[1]) # <- "/Users/cwnelson88/Desktop/OLG/NONAMER_METHOD/sas12/human_immunodeficiency_virus_type_1_CASSAN/3050668/Alignments/NOL_env_1-2547_nonM/OLGenie_codon_results.txt"
-#codon_results_file <- "/Users/cwnelson88/Desktop/OLG/NONAMER_METHOD/sas11/simulations_sas11/SAS11_PhylogenyDistance_0.005_dnds1_2_dnds2_1_R_0.5/OLGenie_codon_results.txt"
-
+codon_results_file <- as.character(argv[1])
 NBOOTSTRAPS <- as.integer(argv[2]) # <- 10000
 NCPUS <- as.integer(argv[3]) # <- 4, 8, or 60
 
@@ -32,10 +21,6 @@ NCPUS <- as.integer(argv[3]) # <- 4, 8, or 60
 ############################################################################################################
 # *BASIC* BOOTSTRAP FUNCTION (dN - dS) for CODON UNIT
 dNdS_diff_boot_fun <- function(codon_results, numerator, denominator, num_replicates, num_cpus) {
-  #num_replicates <- 1000
-  #numerator <- 'NN'
-  #denominator <- 'SN'
-  #num_cpus <- 6
   
   # Function for dN
   dN_function <- function(D, indices) {
@@ -118,10 +103,6 @@ dNNdSN_ratio_used <- (min(NN_sites, SN_sites) > min(NS_sites, SS_sites))
 
 # Determine which ORF2 ratio to use: dNN/dNS or dSN/dSS
 dNNdNS_ratio_used <- (min(NN_sites, NS_sites) > min(SN_sites, SS_sites))
-
-# Double check computational parameters
-#cat('NBOOTSTRAPS=', NBOOTSTRAPS, sep = '')
-#cat('NCPUS=', NCPUS, sep = '')
 
 # BOOTSTRAP EACH RATIO
 boot_dNNdSN <- dNdS_diff_boot_fun(codon_results, 'NN', 'SN', NBOOTSTRAPS, NCPUS)
