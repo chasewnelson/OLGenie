@@ -1,6 +1,6 @@
 <img src="https://github.com/chasewnelson/OLGenie/blob/master/OLGenie_logo.png?raw=true" title="OLGenie logo by Mitch Lin" alt="OLGenie logo by Mitch Lin" align="middle">
 
-**OLGenie** is a Perl program for detecting selection with *d*<sub>N</sub>/*d*<sub>S</sub> in overlapping genes (OLGs). It relies on no external dependencies, facilitating maximum portability. Just download and run.
+**OLGenie** is a Perl program for estimating *d*<sub>N</sub>/*d*<sub>S</sub> to detection selection and function in overlapping genes (OLGs). It relies on no external dependencies, facilitating maximum portability. Just download and run.
 
 To test the software with the [example data](#examples), execute the program at the Unix command line or Mac Terminal as follows:
 
@@ -33,7 +33,7 @@ The choice of which gene to consider the reference gene is arbitrary. Typically,
 	
 <img src="https://github.com/chasewnelson/OLGenie/blob/master/sas12_figure.png" alt="sas12 logo" align="middle" width="2500px">
 
-It is common to detect natural selection in a DNA sequence alignment using *d*<sub>N</sub>/*d*<sub>S</sub>, *i.e.*, the ratio of nonsynonymous (changes the amino acid) to synonymous (does not change the amino acid) differences per site. While *d*<sub>N</sub>/*d*<sub>S</sub> = 1 implies neutrality (*i.e.*, the null hypothesis of no effect), negative (purifying) selection may lead to *d*<sub>N</sub>/*d*<sub>S</sub> < 1 and positive (Darwinian) selection may lay to *d*<sub>N</sub>/*d*<sub>S</sub> > 1. Unfortunately, standard methods for estimating *d*<sub>N</sub>/*d*<sub>S</sub> do not apply to OLGs, because a mutation that is synonymous in one frame may be nonsynonymous in another, and *vice versa*. Although some methods for detecting natural selection in OLGs have been developed, they are generally computationally intensive and limited in utility (*e.g.*, Wei and Zhang 2015; Sabath *et al.* 2008). Thus, it is necessary to develop improved approaches for detecting selection in OLGs that can be implemented with genome-scale data.
+It is common to detect natural selection in a DNA sequence alignment using *d*<sub>N</sub>/*d*<sub>S</sub>, *i.e.*, the ratio of nonsynonymous (changes the amino acid) to synonymous (does not change the amino acid) differences per site. While *d*<sub>N</sub>/*d*<sub>S</sub> = 1 implies neutrality (*i.e.*, the null hypothesis of no effect), negative (purifying) selection may lead to *d*<sub>N</sub>/*d*<sub>S</sub> < 1 and positive (Darwinian) selection may lay to *d*<sub>N</sub>/*d*<sub>S</sub> > 1. Thus, *d*<sub>N</sub>/*d*<sub>S</sub> can be used to detect functional protein-coding genes. Unfortunately, standard methods for estimating *d*<sub>N</sub>/*d*<sub>S</sub> do not apply to OLGs, because a mutation that is synonymous in one frame may be nonsynonymous in another, and *vice versa*. Although some methods for detecting natural selection in OLGs have been developed, they are generally computationally intensive and limited in utility (*e.g.*, Wei and Zhang 2015; Sabath *et al.* 2008). Thus, it is necessary to develop improved approaches for detecting selection in OLGs that can be implemented with genome-scale data.
 
 OLGenie represents a simplification and extension of the method of Wei and Zhang (2015), utilizing the approach of <a target="_blank" href="https://github.com/chasewnelson/SNPGenie">SNPGenie</a> (Nelson *et al.* 2015), and tailored for detecting selection in OLGs. The method considers the effects of mutations in the overlapping frame to determine the numerator (number of differences) and denominator (number of sites) of *d*<sub>N</sub> and *d*<sub>S</sub>. For example, *d*<sub>N</sub> is usually calculated as the mean number of nonsynonymous nucleotide differences per nonsynonymous nucleotide site, and *d*<sub>S</sub> is similarly calculated for synonymous differences and sites. In order to control for the possibility that synonymous sites in the frame of interest may be under selection in the alternate overlapping reading frame, Wei-Zhang further considers the expanded measures *d*<sub>NN</sub>, *d*<sub>SN</sub>, *d*<sub>NS</sub>, and *d*<sub>SS</sub>, where the first subscript refers to the reference gene, and the second to the alternate gene. For example, *d*<sub>SN</sub> refers to the mean number of differences per site that are synonymous in the reference frame but nonsynonymous in the alternate frame (*i.e.*, SN). Using these measures, it is possible to estimate *d*<sub>N</sub>/*d*<sub>S</sub> for the reference gene using *d*<sub>NN</sub>/*d*<sub>SN</sub> or *d*<sub>NS</sub>/*d*<sub>SS</sub>, and to estimate *d*<sub>N</sub>/*d*<sub>S</sub> for the alternate gene as *d*<sub>NN</sub>/*d*<sub>NS</sub> or *d*<sub>SN</sub>/*d*<sub>SS</sub>, *i.e.*, the subscript in the alternate OLG is held constant to control for OLG effects.
 
@@ -90,7 +90,7 @@ This produces TAB-delimited output, as described in the [bootstrap output](#boot
 
 ## <a name="output"></a>Output
 
-**OLGenie** will output the following data:
+**OLGenie** outputs the following data:
 
 ### <a name="standard-output"></a>Standard Output
 
