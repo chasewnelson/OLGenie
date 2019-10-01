@@ -1,6 +1,6 @@
 <img src="https://github.com/chasewnelson/OLGenie/blob/master/OLGenie_logo.png?raw=true" title="OLGenie logo by Mitch Lin" alt="OLGenie logo by Mitch Lin" align="middle">
 
-**OLGenie** is a Perl program for estimating *d*<sub>N</sub>/*d*<sub>S</sub> to detection selection and function in overlapping genes (OLGs). It relies on no external dependencies, facilitating maximum portability. Just download and run.
+**OLGenie** is a Perl program for estimating *d*<sub>N</sub>/*d*<sub>S</sub> to detect selection and function in overlapping genes (OLGs). It relies on no external dependencies, facilitating maximum portability. Just download and run.
 
 To test the software with the [example data](#examples), execute the program at the Unix command line or Mac Terminal as follows:
 
