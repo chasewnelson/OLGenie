@@ -1,22 +1,14 @@
 #! /usr/bin/perl
-# /nas3/cnelson/bin/anaconda2/bin/perl
-# /usr/bin/perl
-#/usr/local/software/PERL/perl-5.26.0/bin/perl
 
-# PROGRAM: SNPGenie for overlapping genes (overlapgenie; OLGenie) using codon-based
-# analysis for pNN/pSN/pNS/pSS 
-
-# THIS VERSION COMPUTES all pairwise comparisons among a set of sequences given by the 
-# fasta, among 6-mers (minimal overlapping unit), then weighting the results.
-
-# This is the FINAL RELEASE of the phylogeny-agnostic version.
+# PROGRAM: SNPGenie + Wei-Zhang method for overlapping genes (overlapgenie; OLGenie) 
+# using codon-based analysis for dNN/dSN/dNS/dSS 
 
 ### Need a WARNING when FASTA names are identical or not correct.
 
 #########################################################################################
 # EXAMPLE CALL:
 #########################################################################################
-# OLGenie.pl --fasta_file=all_seqs.fasta --frame=sas11 > OLGenie_log.txt
+# OLGenie.pl --fasta_file=all_seqs.fasta --frame=sas11 --verbose > OLGenie_log.txt
 #########################################################################################
 
 #########################################################################################
@@ -46,6 +38,7 @@
 #     History, New York, NY 10024, USA
 
 # CITATION1: OLGenie, https://github.com/chasewnelson/OLGenie
+# CITATION2: Nelson CW, Ardern Z, Wei X. OLGenie: detecting natural selection to identify functional overlapping genes. In preparation.
 # CITATION2: Nelson CW, Moncla LH, Hughes AL (2015) SNPGenie: estimating evolutionary 
 #	parameters to detect natural selection using pooled next-generation sequencing data. 
 #	Bioinformatics 31(22):3709-11, doi: 10.1093/bioinformatics/btv449.
@@ -139,7 +132,6 @@ print "\nOLGenie initiated at local time $local_time1\n";
 # Read in the group of sequences from the fasta file
 my %header2sequence;
 my $seq = '';
-#my @seqs_arr;
 my $header = '';
 my @headers_arr;
 my $seq_num = 0;
@@ -170,7 +162,6 @@ while(<IN_FASTA>) {
 			}
 			
 			$header2sequence{$header} = $seq;
-#			push(@seqs_arr, $seq);
 			push(@headers_arr, $header);
 			
 			$header = $_;
@@ -209,8 +200,6 @@ if($header =~ /^[^\w^\-^\.]/) {
 		"### Only alphanumeric characters (a-z, A-Z, 0-9), underscores (_), dashes (-), and periods (.) may be used. SCRIPT TERMINATED.\n\n";
 }
 $header2sequence{$header} = $seq;
-
-#push(@seqs_arr, $seq);
 push(@headers_arr, $header);
 
 
@@ -231,7 +220,7 @@ foreach my $curr_header (keys %header2sequence) {
 	
 	$header_to_def_len{$curr_header} = $defined_length;
 	
-	#print "seq $header has a defined length of $defined_length\n";
+	if($verbose_messages) { print "seq $header has a defined length of $defined_length\n" }
 }
 
 
@@ -255,15 +244,16 @@ for(my $i = 0; $i < @headers_arr; $i++) {
 	}
 }
 
-#foreach my $site (sort {$a <=> $b} keys %unique_9mers) {
-#	print "SITE: " . ($site + 1) . "-" . ($site + 9) . "\n";
-#	foreach my $nonamer (sort keys %{$unique_9mers{$site}}) {
-#		print "$nonamer\: " . $unique_9mers{$site}->{$nonamer} . "\n";
-#	}
-#	print "\n";
-#}
+if($verbose_messages) {
+	foreach my $site (sort {$a <=> $b} keys %unique_9mers) {
+		print "SITE: " . ($site + 1) . "-" . ($site + 9) . "\n";
+		foreach my $nonamer (sort keys %{$unique_9mers{$site}}) {
+			print "$nonamer\: " . $unique_9mers{$site}->{$nonamer} . "\n";
+		}
+		print "\n";
+	}
+}
 
-#exit;
 
 ##########################################################################################
 # ANALYZE ALL UNIQUE PAIRS, PRINT CODON FILE, AND STORE TOTALS
@@ -379,7 +369,6 @@ foreach my $seq_site_index (sort {$a <=> $b} keys %unique_9mers) {
 						print "nonamer1=$nonamer1\n";
 						print "nonamer2=$nonamer2\n";
 						print "nonamer1_count=$nonamer1_count\n";
-						#print "nonamer2=$nonamer2_count\n";s
 						print "codon_nonamer1_ORF2_prev=$codon_nonamer1_ORF2_prev\n";
 						print "codon_nonamer1_ORF2_next=$codon_nonamer1_ORF2_next\n";
 						print "codon_nonamer2_ORF2_prev=$codon_nonamer2_ORF2_prev\n";
@@ -1157,7 +1146,6 @@ foreach my $seq_site_index (sort {$a <=> $b} keys %unique_9mers) {
 						print "nonamer1=$nonamer1\n";
 						print "nonamer2=$nonamer2\n";
 						print "nonamer1_count=$nonamer1_count\n";
-						#print "nonamer2=$nonamer2_count\n";s
 						print "codon_nonamer1_ORF2_prev=$codon_nonamer1_ORF2_prev\n";
 						print "codon_nonamer1_ORF2_next=$codon_nonamer1_ORF2_next\n";
 						print "codon_nonamer2_ORF2_prev=$codon_nonamer2_ORF2_prev\n";
@@ -1934,7 +1922,6 @@ foreach my $seq_site_index (sort {$a <=> $b} keys %unique_9mers) {
 						print "nonamer1=$nonamer1\n";
 						print "nonamer2=$nonamer2\n";
 						print "nonamer1_count=$nonamer1_count\n";
-						#print "nonamer2=$nonamer2_count\n";s
 						print "codon_nonamer1_ORF2_prev=$codon_nonamer1_ORF2_prev\n";
 						print "codon_nonamer1_ORF2_next=$codon_nonamer1_ORF2_next\n";
 						print "codon_nonamer2_ORF2_prev=$codon_nonamer2_ORF2_prev\n";
@@ -2706,9 +2693,11 @@ foreach my $seq_site_index (sort {$a <=> $b} keys %unique_9mers) {
 ##################################################################################################
 				} elsif($frame eq 'sas12') {
 					
-					#print "site_index=$site_index\n";
-					#print "nonamer1=$nonamer1\n";
-					#print "nonamer2=$nonamer2\n";
+					if($verbose_messages) {
+						print "site_index=$site_index\n";
+						print "nonamer1=$nonamer1\n";
+						print "nonamer2=$nonamer2\n";
+					}
 					
 					# First 2 nt of prev codon, last 1 nt of next codon (opposite strand)
 					my $codon_nonamer1_ORF2_prev = revcom(substr($nonamer1, ($site_index - 1), 3));
@@ -2721,7 +2710,6 @@ foreach my $seq_site_index (sort {$a <=> $b} keys %unique_9mers) {
 						print "nonamer1=$nonamer1\n";
 						print "nonamer2=$nonamer2\n";
 						print "nonamer1_count=$nonamer1_count\n";
-						#print "nonamer2=$nonamer2_count\n";s
 						print "codon_nonamer1_ORF2_prev=$codon_nonamer1_ORF2_prev\n";
 						print "codon_nonamer1_ORF2_next=$codon_nonamer1_ORF2_next\n";
 						print "codon_nonamer2_ORF2_prev=$codon_nonamer2_ORF2_prev\n";
@@ -3058,7 +3046,6 @@ foreach my $seq_site_index (sort {$a <=> $b} keys %unique_9mers) {
 									}
 								}
 							} # end member 1 site 3
-							
 							
 							
 							##################################################################
@@ -3504,7 +3491,6 @@ foreach my $seq_site_index (sort {$a <=> $b} keys %unique_9mers) {
 						print "nonamer1=$nonamer1\n";
 						print "nonamer2=$nonamer2\n";
 						print "nonamer1_count=$nonamer1_count\n";
-						#print "nonamer2=$nonamer2_count\n";
 						print "codon_nonamer1_ORF2=$codon_nonamer1_ORF2\n";
 						print "codon_nonamer2_ORF2=$codon_nonamer2_ORF2\n";
 					}
@@ -3522,9 +3508,7 @@ foreach my $seq_site_index (sort {$a <=> $b} keys %unique_9mers) {
 					# New phylogeny-naive approach
 					$alt1_codons_to_counts{$codon_nonamer1_ORF2} += $nonamer1_count;
 					$alt1_codons_to_counts{$codon_nonamer2_ORF2} += $nonamer1_count; # ADDED
-					#$alt2_codons_to_counts{$codon_nonamer1_ORF2} += $nonamer1_count; # COMEBACK -- make sure it's counting correctly for this frame
-					#$alt1_codons_to_counts{$codon_nonamer1_ORF2} += $nonamer1_count; # these store redundant info for this frame
-					# always nonamer1_count because otherwise redundant?
+					# always nonamer1_count because otherwise redundant
 					
 					my $nonamer1_num_changes_poss_site1 = 0;
 					my $nonamer1_num_changes_NN_site1 = 0;
@@ -4256,8 +4240,6 @@ foreach my $seq_site_index (sort {$a <=> $b} keys %unique_9mers) {
 					
 				} # end sas13 
 			} # end case in which each member's ORF1 codon is FULLY DEFINED
-				
-#			} # last codon?
 			
 			# Note that the member members have been completed in at least one comparison
 			$seq_completed{$nonamer1} = 1;
@@ -4354,11 +4336,16 @@ foreach my $seq_site_index (sort {$a <=> $b} keys %unique_9mers) {
 
 ##########################################################################################
 # PRINT CODON RESULTS
-open(CODON_FILE,">>$output_file");
+if(-f "$output_file") {
+	print "### WARNING: overwriting results file $output_file\n";
+}
+
+open(CODON_FILE,">$output_file");
 print CODON_FILE "codon_num\t" .
 	"ref_codon_maj\t" .
 	"alt_codon1_maj\t" .
 	"alt_codon2_maj\t" .
+	"num_defined_seqs\t" .
 	"nonamers\t" . 
 	"nonamer_counts\t" .
 	"multiple_variants\t" .
@@ -4386,6 +4373,29 @@ foreach my $codon_num (sort {$a <=> $b} keys %codon_data_hh) {
 		$codon_data_hh{$codon_num}->{ref_codon_maj} . "\t" .
 		$codon_data_hh{$codon_num}->{alt1_codon_maj} . "\t" .
 		$codon_data_hh{$codon_num}->{alt2_codon_maj} . "\t";
+	
+	# Num defined codons
+	my @nonamers = split(/\:/, $codon_data_hh{$codon_num}->{nonamers});
+	my @nonamer_counts = split(/\:/, $codon_data_hh{$codon_num}->{nonamer_counts});
+	
+	if(scalar(@nonamers) == scalar(@nonamer_counts)) {
+		my $defined_nonamer_count = 0;
+		
+		for (my $i = 0; $i < scalar(@nonamers); $i++) {
+			unless($nonamers[$i] =~ /-/) {
+				$defined_nonamer_count += $nonamer_counts[$i];
+			}
+		}
+		
+		if($defined_nonamer_count < 6) {
+			print "### WARNING: reference codon number $codon_num has <6 defined sequences. The dN/dS contribution of this site may be unreliable.\n";
+		}
+		
+		$codon_output_buffer .= $defined_nonamer_count . "\t";
+		
+	} else { # shouldn't ever happen
+		$codon_output_buffer .= "NA\t"; # defined nonamer count
+	}
 	
 	if($verbose) {
 		$codon_output_buffer .= $codon_data_hh{$codon_num}->{nonamers} . "\t" .
@@ -4536,15 +4546,6 @@ print "SN_diffs=$SN_diffs_total\n";
 print "NS_diffs=$NS_diffs_total\n";
 print "SS_diffs=$SS_diffs_total\n";
 print "\n";
-#printf "NN_sites=%.3f\n", $NN_sites_total;
-#printf "SN_sites=%.3f\n", $SN_sites_total;
-#printf "NS_sites=%.3f\n", $NS_sites_total;
-#printf "SS_sites=%.3f\n", $SS_sites_total;
-#printf "NN_diffs=%.3f\n", $NN_diffs_total;
-#printf "SN_diffs=%.3f\n", $SN_diffs_total;
-#printf "NS_diffs=%.3f\n", $NS_diffs_total;
-#printf "SS_diffs=%.3f\n", $SS_diffs_total;
-#print "\n";
 
 print "(2) Mean substitution rates (between-species) or nucleotide diversities (within-species):\n";
 
@@ -4568,10 +4569,6 @@ print "dNN=$dNN\n";
 print "dSN=$dSN\n";
 print "dNS=$dNS\n";
 print "dSS=$dSS\n";
-#printf "dNN=%.3f\n", $dNN;
-#printf "dSN=%.3f\n", $dSN;
-#printf "dNS=%.3f\n", $dNS;
-#printf "dSS=%.3f\n", $dSS;
 print "\n";
 
 print "(3) dN/dS estimates:\n";
@@ -4587,8 +4584,6 @@ unless($dNSdSS eq 'NaN') {
 
 print "dNN/dSN=$dNNdSN\n";
 print "dNS/dSS=$dNSdSS\n";
-#printf "dNN/dSN=%.3f\n", $dNNdSN;
-#printf "dNS/dSS=%.3f\n", $dNSdSS;
 print "\n";
 
 print "For the ALTERNATE gene (ORF2):\n";
@@ -4603,8 +4598,6 @@ unless($dSNdSS eq 'NaN') {
 
 print "dNN/dNS=$dNNdNS\n";
 print "dSN/dSS=$dSNdSS\n";
-#printf "dNN/dNS=%.3f\n", $dNNdNS;
-#printf "dSN/dSS=%.3f\n", $dSNdSS;
 print "\n";
 
 print "(4) NOTES:\n";
@@ -4696,7 +4689,7 @@ foreach my $codon_num (sort {$a <=> $b} keys %site_diffs_hh) {
 
 #########################################################################################
 # PRINT OTHER TOTALS TO SCREEN IF DEVELOPING
-if($verbose_messages) {	
+if($verbose_messages) {	# DEPRECATED OUTPUT
 	
 	my $NN_sites_mean = &mean(@NN_sites);
 	my $SN_sites_mean = &mean(@SN_sites);
@@ -4887,3 +4880,4 @@ sub end_the_program {
 		"################################################################################".
 		"\n\n\n"; 
 }
+
