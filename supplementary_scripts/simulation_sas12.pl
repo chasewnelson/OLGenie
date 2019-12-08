@@ -1,6 +1,4 @@
-#! /nas3/cnelson/bin/anaconda2/bin/perl
-#/usr/bin/perl
-# /usr/bin/perl
+#! /usr/bin/perl
 
 ############################################################################################################
 ### Supplementary Material for Nelson CW, Ardern Z, Wei X, "OLGenie: Estimating Natural Selection to Predict Functional Overlapping Genes"

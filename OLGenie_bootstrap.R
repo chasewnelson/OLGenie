@@ -1,5 +1,4 @@
 #! /usr/local/bin/Rscript --slave --no-restore --no-save
-# /nas3/cnelson/bin/anaconda2/bin/Rscript --slave --no-restore --no-save
 
 ############################################################################################################
 # OLGenie process codon results to bootstrap
