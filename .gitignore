@@ -14,3 +14,7 @@ EXAMPLE_files/HIV_M_subtypes_no_recombinants_asp_sas12_ref_frame_ntd.fasta
 EXAMPLE_files/HIV_M_subtypes_no_recombinants_asp_sas12_ref_frame_ntd.fasta.treefile
 
 OLGenie_logo_old.png
+
+supplementary_scripts/old/simulation_sas12_huxley1.pl
+
+supplementary_scripts/temp/run_POINT/run_OLG_simulations_sas11.sh
