@@ -9,7 +9,7 @@ To test the software with the [example data](#examples), execute the program at 
 	OLGenie.pl --fasta_file=<alignment>.fasta --frame=<frame> \
 	--output_file=<OLGenie_codon_results>.tsv --verbose > OLGenie_log.txt
 
-Find some real [examples](#examples) below. Check out our <a target="_blank" rel="noopener noreferrer" href="https://github.com/chasewnelson/OLGenie">preprint on bioRxiv</a> (coming soon).
+Find some real [examples](#examples) below. Check out our <a target="_blank" rel="noopener noreferrer" href="https://doi.org/10.1101/2019.12.14.876607">preprint on bioRxiv</a>.
 
 ## <a name="contents"></a>Contents
 
@@ -165,7 +165,7 @@ If you have questions about **OLGenie**, please click on the <a target="_blank" 
 
 When using this software, please refer to and cite:
 
->Nelson CW, Ardern Z, Wei X. OLGenie: Estimating Natural Selection to Predict Functional Overlapping Genes. bioRxiv doi: <a target="_blank" rel="noopener noreferrer" href="https://www.biorxiv.org/content/10.1101/2019.12.14.876607v1">https://www.biorxiv.org/content/10.1101/2019.12.14.876607v1</a>
+>Nelson CW, Ardern Z, Wei X. OLGenie: Estimating Natural Selection to Predict Functional Overlapping Genes. bioRxiv doi: <a target="_blank" rel="noopener noreferrer" href="https://doi.org/10.1101/2019.12.14.876607">https://doi.org/10.1101/2019.12.14.876607</a>
 
 and this page:
 
