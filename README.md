@@ -165,7 +165,7 @@ If you have questions about **OLGenie**, please click on the <a target="_blank" 
 
 When using this software, please refer to and cite:
 
->Nelson CW, Ardern Z, Wei X. OLGenie: detecting natural selection to identify functional overlapping genes. bioRxiv doi: <a target="_blank" rel="noopener noreferrer" href="https://github.com/chasewnelson/OLGenie">coming soon</a>
+>Nelson CW, Ardern Z, Wei X. OLGenie: Estimating Natural Selection to Predict Functional Overlapping Genes. bioRxiv doi: <a target="_blank" rel="noopener noreferrer" href="https://www.biorxiv.org/content/10.1101/2019.12.14.876607v1">https://www.biorxiv.org/content/10.1101/2019.12.14.876607v1</a>
 
 and this page:
 
