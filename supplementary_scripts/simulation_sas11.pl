@@ -39,7 +39,7 @@ my $die_message = "\n### OLGenie **sas11** simulation\n".
 		"# --num_codons=\<number of codons\>\n" . 
 		"# --num_seqs=\<number of sequences\> (max 1,024)\n" . 
 		"# --distance=\<mean pairwise differences per site\> (original script)\n" . 
-		"# --distance_actual=\<mean pairwise differences per site\> (a value we will attempt to acheive)\n" . 
+		"# --distance_actual=\<mean pairwise differences per site\> (a value we will attempt to achieve)\n" . 
 		"# --R=\<transition/transversion ratio\>\n" . 
 		"# --outfile=\<output file name or path\>\n\n";
 
