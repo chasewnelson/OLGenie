@@ -1,4 +1,4 @@
-#! /usr/bin/perl
+#! /usr/bin/env perl
 
 # PROGRAM: SNPGenie + Wei-Zhang method for overlapping genes (overlapgenie; OLGenie) 
 # using codon-based analysis for dNN/dSN/dNS/dSS 
