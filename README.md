@@ -9,7 +9,7 @@ To test the software with the [example data](#examples), execute the program at 
 	OLGenie.pl --fasta_file=<alignment>.fasta --frame=<frame> \
 	--output_file=<OLGenie_codon_results>.tsv --verbose > OLGenie_log.txt
 
-Find some real [examples](#examples) below. Check out our <a target="_blank" rel="noopener noreferrer" href="https://doi.org/10.1101/2019.12.14.876607">preprint on bioRxiv</a>.
+Find some real [examples](#examples) below. For more details, check out our **<a target="_blank" rel="noopener noreferrer" href="https://academic.oup.com/mbe/advance-article/doi/10.1093/molbev/msaa087/5815567">Advance Access paper</a>** at *Molecular Biology and Evolution*.
 
 ## <a name="contents"></a>Contents
 
@@ -56,7 +56,9 @@ Call **OLGenie** using the following options:
 
 ## <a name="examples"></a>EXAMPLES
 
-Example input and output files are available in the `EXAMPLE_INPUT` and `EXAMPLE_OUTPUT` directories at this GitHub page, where reproducible examples are numbered (*e.g.*, **example1.out**). Note that, if your input file(s) (*e.g.*, **alignment.fasta**) are not in the working directory (*i.e.*, where your Terminal is currently operating), you will need to specify the full path of the file name (*e.g.*, **/Users/ohta/Desktop/OLGenie\_practice/alignment.fasta**). Also note that, in the examples below, a `\` is used simply to continue the previous command on the line.
+Example input and output files for `OLGenie.pl` are available in the `EXAMPLE_INPUT` and `EXAMPLE_OUTPUT` directories at this GitHub page, where reproducible examples are numbered (*e.g.*, **example1.out**). This script produces TAB-delimited output with one row for each (non-terminal) codon, with columns as described in the [Codon Results Output File](#codon-output-file) section.
+
+Note that, if your input file(s) (*e.g.*, **alignment.fasta**) are not in the working directory (*i.e.*, where your Terminal is currently operating), you will need to specify the full path of the file name (*e.g.*, **/Users/ohta/Desktop/OLGenie\_practice/alignment.fasta**). Also note that, in the examples below, a `\` is used simply to continue the previous command on the line. 
 
 ### EXAMPLE 1: A SIMPLE RUN
 Note that this is a 'real' example and may take up to 60 seconds!
@@ -74,9 +76,9 @@ Use our script `OLGenie_bootstrap.R`. We provide this script separately so that 
 
 Call the script with the following (unnamed) arguments (in this order):
 
-1. The name/path of the file containing the codon results file from the OLGenie analysis.
-2. The number of bootstrap replicates to perform (typically 1,000 or 10,000).
-3. The number of parallel processes (CPUs) to use when bootstrapping. A typical personal laptop computer can utilize 4-8 CPUs, while a high performance computing cluster might provide access to 10s or 100s.
+1. CODON RESULTS FILE: the name/path of the file containing the codon results file from the OLGenie analysis. This file must not have been modified, and should only contain the results for one analysis (i.e., one gene product and frame).
+2. NUMBER OF BOOTSTRAP REPLICATES PER WINDOW: the number of bootstrap replicates to perform (typically 1,000 or 10,000).
+3. NUMBER OF CPUS: the number of parallel processes (CPUs) to use when bootstrapping. A typical personal laptop computer can utilize 4-8 CPUs, while a high performance computing cluster might provide access to 10s or 100s.
 
 Thus, the format is:
 
@@ -86,7 +88,33 @@ For example, try the following using the results from **Example 2**:
 
 	OLGenie_bootstrap.R OLGenie_codons_results_ex2.txt 1000 4 > example3.out
 
-This produces TAB-delimited output, as described in the [bootstrap output](#bootstrap-output) section.
+This produces TAB-delimited output, as described in the [Bootstrap Output](#bootstrap-output) section.
+
+### EXAMPLE 4: SLIDING WINDOWS WITH BOOTSTRAPPING
+Use our script `OLGenie_sliding windows.R`. Make sure the R packages `dplyr`, `readr`, `stringr`, and `boot` have been installed (*e.g.*, by calling `install.packages("boot")` at the R console).
+
+Call the script with the following 5-10 (unnamed) arguments (in this order):
+
+1. CODON RESULTS FILE: the name/path of the file containing the codon results file from the OLGenie analysis (OLGenie_codon_results.txt). This file must not have been modified, and should only contain the results for one analysis (i.e., one gene product and frame).
+2. NUMERATOR SITE TYPE: NN, SN, or NS.
+3. DENOMINATOR SITE TYPE: SN, NS, or SS.
+4. SLIDING WINDOW SIZE: measured in CODONS; must be ≥2; ≥25 recommended.
+5. SLIDING WINDOW STEP SIZE: measured in CODONS; must be ≥1.
+6. NUMBER OF BOOTSTRAP REPLICATES PER WINDOW: OPTIONAL; ≥2; DEFAULT=1000.
+7. MINIMUM NUMBER OF DEFINED CODONS PER CODON POSITION (*OPTIONAL*): ≥2; DEFAULT=6.
+8. MULTIPLE HITS CORRECTION (*OPTIONAL*): "NONE" or "JC" (Jukes-Cantor); DEFAULT=NONE. Keep in mind that no correction is truly applicable to OLGs.
+9. NUMBER OF CPUS (*OPTIONAL*): ≥1; DEFAULT=1. A typical personal laptop computer can utilize 4-8 CPUs, while a high performance computing cluster might provide access to 10s or 100s.
+10. STRING TO PREPEND TO OUTPUT LINES (*OPTIONAL*): DEFAULT="".
+
+Thus, the format is:
+
+	OLGenie_sliding_windows.R <CODON RESULTS FILE> <NUMERATOR> <DENOMINATOR> <WINDOW SIZE> <WINDOW STEP SIZE> <NUM BOOTSTRAPS> <MIN DEFINED CODONS> <CORRECTION> <NUM CPUS> > <output>.out
+
+For example, a real command might look like the following:
+
+	OLGenie_sliding_windows.R OLGenie_codon_results.txt NN NS 25 1 1000 6 NONE 6 > OLGenie_sliding_windows.out
+
+This produces TAB-delimited **output**, as described in the [Sliding Window Output](#sliding-window-output) section. The output file is placed within the same directory using the name of the input file as a prefix, but adding the suffix `*_WINDOWS_<RATIO>.tsv`.
 
 ## <a name="output"></a>Output
 
@@ -154,6 +182,36 @@ Significant deviations from neutrality (*d*<sub>N</sub> - *d*<sub>S</sub> = 0) c
 22. `boot_dN_m_dS_SE`: the standard error of *d*<sub>N</sub> - *d*<sub>S</sub>, estimated by bootstrapping.
 23. `boot_dN_m_dS_P`: the *P* value of a deviation from *d*<sub>N</sub> - *d*<sub>S</sub> = 0 (two-sided; *Z*-test).
 
+### <a name="sliding-window-output"></a>Sliding Window Output
+
+The R script `OLGenie_sliding_windows.R` can be used to compute any of the *d*<sub>N</sub>/*d*<sub>S</sub> ratio estimators and bootstrap them in one feel swoop (see [examples](#examples)). The output includes all the original columns present in the [codon results output file](#codon-output-file), along with additional columns specific to the sliding windows. These are:
+
+* `sw_ratio`: the overlapping gene *d*<sub>N</sub>/*d*<sub>S</sub> ratio estimator computed in the analysis, *i.e.*, dNNdSN, dNNdNS, dNSdSS, or dSNdSS (denoting *d*<sub>NN</sub>/*d*<sub>SN</sub>, *d*<sub>NN</sub>/*d*<sub>NS</sub>, *d*<sub>NS</sub>/*d*<sub>SS</sub>, and *d*<sub>SN</sub>/*d*<sub>SS</sub>, respectively).
+* `sw_start`: first codon included in the window.
+* `sw_center`: middle codon included in the window.
+* `sw_end`: last codon included in the window.
+* `sw_num_replicates`: number of bootstrap replicates.
+* `sw_N_diffs`: sum of NUMERATOR-type (NN, SN, or NS) differences observed in the window.
+* `sw_S_diffs`: sum of DENOMINATOR-type (SN, NS, or SS) differences observed in the window.
+* `sw_N_sites`: sum of NUMERATOR-type (NN, SN, or NS) sites observed in the window.
+* `sw_S_sites`: sum of DENOMINATOR-type (SN, NS, or SS) sites observed in the window.
+* `sw_dN`: *d*<sub>N</sub> (NUMERATOR) estimate for the window.
+* `sw_dS`: *d*<sub>S</sub> (DENOMINATOR) estimate for the window.
+* `sw_dNdS`: *d*<sub>N</sub>/*d*<sub>S</sub> ratio estimate for the window (neutral null expectation: 1).
+* `sw_dN_m_dS`: *d*<sub>N</sub>-*d*<sub>S</sub> difference estimate for the window (neutral null expectation: 0).
+* `sw_boot_dN_SE`: standard error (SE) of mean *d*<sub>N</sub>, estimated as the standard deviation of the bootstrap replicates.
+* `sw_boot_dS_SE`: standard error (SE) of mean *d*<sub>S</sub>, estimated as the standard deviation of the bootstrap replicates.
+* `sw_boot_dN_over_dS_SE`: standard error (SE) of mean *d*<sub>N</sub>/*d*<sub>S</sub>, estimated as the standard deviation of the bootstrap replicates.
+* `sw_boot_dN_over_dS_P`: *Z*-test *P*-value of null hypothesis that *d*<sub>N</sub>/*d*<sub>S</sub>=1, estimated from the bootstrap SE.
+* `sw_boot_dN_m_dS_SE`: standard error (SE) of mean *d*<sub>N</sub>-*d*<sub>S</sub>, estimated as the standard deviation of the bootstrap replicates.
+* `sw_boot_dN_m_dS_P`: *Z*-test *P*-value of null hypothesis that *d*<sub>N</sub>-*d*<sub>S</sub>=0, estimated from the bootstrap SE. (***Recommended test.***)
+* `sw_boot_dN_gt_dS_count`: number of bootstrap replicates in which *d*<sub>N</sub>>*d*<sub>S</sub>.
+* `sw_boot_dN_eq_dS_count`: number of bootstrap replicates in which *d*<sub>N</sub>=*d*<sub>S</sub>.
+* `sw_boot_dN_lt_dS_count`: number of bootstrap replicates in which *d*<sub>N</sub><*d*<sub>S</sub>.
+* `sw_ASL_dN_gt_dS_P`: one-sided achieved significance level (ASL) *P*-value of the null hypothesis that *d*<sub>N</sub>>*d*<sub>S</sub>.
+* `sw_ASL_dN_lt_dS_P`: one-sided achieved significance level (ASL) *P*-value of the null hypothesis that *d*<sub>N</sub><*d*<sub>S</sub>.
+* `sw_ASL_dNdS_P`: two-sided achieved significance level (ASL) *P*-value of the null hypothesis that *d*<sub>N</sub>=*d*<sub>S</sub>.
+
 ## <a name="troubleshooting"></a>Troubleshooting
 
 If you have questions about **OLGenie**, please click on the <a target="_blank" href="https://github.com/chasewnelson/OLGenie/issues">Issues</a> tab at the top of this page and begin a new thread, so that others might benefit from the discussion. Common questions will be addressed in this section.
@@ -165,7 +223,7 @@ If you have questions about **OLGenie**, please click on the <a target="_blank" 
 
 When using this software, please refer to and cite:
 
->Nelson CW, Ardern Z, Wei X. OLGenie: Estimating Natural Selection to Predict Functional Overlapping Genes. bioRxiv doi: <a target="_blank" rel="noopener noreferrer" href="https://doi.org/10.1101/2019.12.14.876607">https://doi.org/10.1101/2019.12.14.876607</a>
+>Nelson CW, Ardern Z, Wei X. <a target="_blank" rel="noopener noreferrer" href="https://academic.oup.com/mbe/advance-article/doi/10.1093/molbev/msaa087/5815567">OLGenie: Estimating Natural Selection to Predict Functional Overlapping Genes</a>. *Molecular Biology and Evolution*, msaa087 (*in press*)
 
 and this page:
 

@@ -62,6 +62,7 @@ my $frame;
 my $output_file;
 my $mode;
 my $verbose;
+my $easter;
 my $verbose_messages; # only meant for developing code
 
 my $die_message = "\n\n" . 
@@ -102,6 +103,7 @@ GetOptions( "fasta_file=s" => \$fasta_file,
 			"output_file=s" => \$output_file,
 			"mode=s" => \$mode,
 			"verbose" => \$verbose,
+			"easter" => \$easter,
 			"verbose_messages" => \$verbose_messages )
 			
 			or die $die_message;
@@ -526,6 +528,7 @@ sub olgenie_method {
 							my $nt2_nonamer2_WT = substr($codon_nonamer2_ORF1, 1, 1);
 							my $nt3_nonamer2_WT = substr($codon_nonamer2_ORF1, 2, 1);
 							
+							
 							foreach my $nt (@nucleotides) {
 								##################################################################
 								# nonamer1
@@ -569,6 +572,9 @@ sub olgenie_method {
 									if($AA_nonamer1_ORF2_prev eq '*' || $AA_nonamer1_ORF2_prev_MUT eq '*') {
 										$nonamer1_STOP_caused++;
 									}
+									
+									# EASTER: enumerate all possible, site 1
+									if($easter) { print "$codon_in_seq\tnonamer1\t$codon_nonamer1_ORF1\t$codon_nonamer1_ORF2_prev\t$nt1_nonamer1_WT\t$nt\t$AA_nonamer1_ORF1\t$AA_nonamer1_ORF2_prev\t1\t$AA_nonamer1_ORF1_MUT\t$AA_nonamer1_ORF2_prev_MUT\n" }
 									
 									# TALLY VIABLE CHANGES, GET NUMBER OF DIFFS
 									unless($nonamer1_STOP_caused > 0) {
@@ -655,6 +661,9 @@ sub olgenie_method {
 										$nonamer1_STOP_caused++;
 									}
 									
+									# EASTER: enumerate all possible, site 2
+									if($easter) { print "$codon_in_seq\tnonamer1\t$codon_nonamer1_ORF1\t$codon_nonamer1_ORF2_prev\t$nt2_nonamer1_WT\t$nt\t$AA_nonamer1_ORF1\t$AA_nonamer1_ORF2_prev\t2\t$AA_nonamer1_ORF1_MUT\t$AA_nonamer1_ORF2_prev_MUT\n" }
+									
 									# TALLY VIABLE CHANGES, GET NUMBER OF DIFFS
 									unless($nonamer1_STOP_caused > 0) {
 										$nonamer1_num_changes_poss_site2++;
@@ -739,6 +748,9 @@ sub olgenie_method {
 									if($AA_nonamer1_ORF2_next eq '*' || $AA_nonamer1_ORF2_next_MUT eq '*') {
 										$nonamer1_STOP_caused++;
 									}
+									
+									# EASTER: enumerate all possible, site 3
+									if($easter) { print "$codon_in_seq\tnonamer1\t$codon_nonamer1_ORF1\t$codon_nonamer1_ORF2_next\t$nt3_nonamer1_WT\t$nt\t$AA_nonamer1_ORF1\t$AA_nonamer1_ORF2_next\t3\t$AA_nonamer1_ORF1_MUT\t$AA_nonamer1_ORF2_next_MUT\n" }
 									
 									# TALLY VIABLE CHANGES, GET NUMBER OF DIFFS
 									unless($nonamer1_STOP_caused > 0) {
@@ -829,6 +841,13 @@ sub olgenie_method {
 										$nonamer2_STOP_caused++;
 									}
 									
+									
+									
+									
+									
+									# EASTER: enumerate all possible, site 1
+									if($easter) { print "$codon_in_seq\tnonamer2\t$codon_nonamer2_ORF1\t$codon_nonamer2_ORF2_prev\t$nt1_nonamer2_WT\t$nt\t$AA_nonamer2_ORF1\t$AA_nonamer2_ORF2_prev\t1\t$AA_nonamer2_ORF1_MUT\t$AA_nonamer2_ORF2_prev_MUT\n" }
+									
 									# TALLY VIABLE CHANGES, GET NUMBER OF DIFFS
 									unless($nonamer2_STOP_caused > 0) {
 										$nonamer2_num_changes_poss_site1++;
@@ -894,6 +913,9 @@ sub olgenie_method {
 										$nonamer2_STOP_caused++;
 									}
 									
+									# EASTER: enumerate all possible, site 2
+									if($easter) { print "$codon_in_seq\tnonamer2\t$codon_nonamer2_ORF1\t$codon_nonamer2_ORF2_prev\t$nt2_nonamer2_WT\t$nt\t$AA_nonamer2_ORF1\t$AA_nonamer2_ORF2_prev\t2\t$AA_nonamer2_ORF1_MUT\t$AA_nonamer2_ORF2_prev_MUT\n" }
+									
 									# TALLY VIABLE CHANGES, GET NUMBER OF DIFFS
 									unless($nonamer2_STOP_caused > 0) {
 										$nonamer2_num_changes_poss_site2++;
@@ -957,6 +979,10 @@ sub olgenie_method {
 									if($AA_nonamer2_ORF2_next eq '*' || $AA_nonamer2_ORF2_next_MUT eq '*') {
 										$nonamer2_STOP_caused++;
 									}
+									
+									# EASTER: enumerate all possible, site 3
+									if($easter) { print "$codon_in_seq\tnonamer2\t$codon_nonamer2_ORF1\t$codon_nonamer2_ORF2_next\t$nt3_nonamer2_WT\t$nt\t$AA_nonamer2_ORF1\t$AA_nonamer2_ORF2_next\t3\t$AA_nonamer2_ORF1_MUT\t$AA_nonamer2_ORF2_next_MUT\n" }
+									
 									
 									# TALLY VIABLE CHANGES, GET NUMBER OF DIFFS
 									unless($nonamer2_STOP_caused > 0) {
@@ -4762,7 +4788,8 @@ sub olgenie_method {
 	print "-NaN indicates undefined (Not a Number) values (division by 0).\n";
 	print "-To test for significance, please bootstrap OLGenie_codon_results.txt using OLGenie_bootstrap.R.\n";
 	print "\tFor example, at the command line:\n\n";
-	print "\$ OLGenie_bootstrap.R OLGenie_codon_results.txt > OLGenie_test_results.txt\n\n";
+	print "\$ OLGenie_bootstrap.R OLGenie_codon_results.txt [MIN_DEFINED_CODONS] [NUM_BOOTSTRAPS] [NUM_CPUS] > OLGenie_test_results.txt\n";
+	print "\$ OLGenie_bootstrap.R OLGenie_codon_results.txt 6 10000 4 > OLGenie_test_results.txt\n\n";
 	print "\n#########################################################################################\n\n";
 	
 	
