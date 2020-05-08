@@ -72,7 +72,7 @@ if(! (MIN_DEFINED_CODONS >= 2)) {
   MIN_DEFINED_CODONS <- 6
 }
 
-if(! (is.na(ARGV[8]) && ARGV[8] == "JC")) {
+if(! is.na(ARGV[8]) && ARGV[8] == "JC") {
   CORRECTION <- as.character(ARGV[8])
 } else {
   cat("### WARNING: unrecognized CORRECTION supplied. Using: \"NONE\".\n")

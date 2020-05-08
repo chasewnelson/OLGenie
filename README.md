@@ -74,11 +74,14 @@ Remember to replace the `--output_file` path with a location that exists on your
 ### EXAMPLE 3: TESTING FOR SIGNIFICANCE WITH BOOTSTRAPPING
 Use our script `OLGenie_bootstrap.R`. We provide this script separately so that users can take advantage of the accessible statistical resources offerred by R without having to install Perl modules. Just make sure the R packages `readr` and `boot` have been installed (*e.g.*, by calling `install.packages("readr")` and `install.packages("boot")` at the R console).
 
-Call the script with the following (unnamed) arguments (in this order):
+Call the script with the following 3-6 (unnamed) arguments (in this order):
 
-1. CODON RESULTS FILE: the name/path of the file containing the codon results file from the OLGenie analysis. This file must not have been modified, and should only contain the results for one analysis (i.e., one gene product and frame).
-2. NUMBER OF BOOTSTRAP REPLICATES PER WINDOW: the number of bootstrap replicates to perform (typically 1,000 or 10,000).
-3. NUMBER OF CPUS: the number of parallel processes (CPUs) to use when bootstrapping. A typical personal laptop computer can utilize 4-8 CPUs, while a high performance computing cluster might provide access to 10s or 100s.
+1. **CODON RESULTS FILE**. The name/path of the file containing the codon results file from the OLGenie analysis. This file must not have been modified, and should only contain the results for one analysis (i.e., one gene product and frame).
+2. **MINIMUM NUMBER OF DEFINED CODONS PER CODON POSITION** (≥2; *RECOMMENDED*=6). Alignment positions with very few defined (non-gap, non-ambiguous) codons may be prone to erroreous *d*<sub>N</sub>/*d*<sub>S</sub> estimates.
+3. **NUMBER OF BOOTSTRAP REPLICATES** (≥2; *RECOMMENDED*=10000). The number of bootstrap replicates to perform (typically 1,000 or 10,000).
+4. **NUMBER OF CPUS** (*OPTIONAL*; ≥1; DEFAULT=1). The number of parallel processes (CPUs) to use when bootstrapping. A typical personal laptop computer can utilize 4-8 CPUs, while a high performance computing cluster might provide access to 10s or 100s.
+5. **MULTIPLE HITS CORRECTION** (*OPTIONAL*; \"NONE\" or \"JC\"; DEFAULT=NONE). When the raw *p*-distance (mean number of pairwise differences per site) exceeds 0.1, the possibility that sites have undergone multiple hits (recurrent changes at the same hit which cannot be measured) increases. Although no known correction is technically applicable to overlapping genes, we offer Jukes-Cantor as an option.
+6. **STRING TO PREPEND TO OUTPUT LINES** (*OPTIONAL*; DEFAULT=\"\").
 
 Thus, the format is:
 
@@ -86,7 +89,7 @@ Thus, the format is:
 
 For example, try the following using the results from **Example 2**:
 
-	OLGenie_bootstrap.R OLGenie_codons_results_ex2.txt 1000 4 > example3.out
+	OLGenie_bootstrap.R OLGenie_codons_results_ex2.txt 2 1000 4 > example3.out
 
 This produces TAB-delimited output, as described in the [Bootstrap Output](#bootstrap-output) section.
 
@@ -95,16 +98,16 @@ Use our script `OLGenie_sliding windows.R`. Make sure the R packages `dplyr`, `r
 
 Call the script with the following 5-10 (unnamed) arguments (in this order):
 
-1. CODON RESULTS FILE: the name/path of the file containing the codon results file from the OLGenie analysis (OLGenie_codon_results.txt). This file must not have been modified, and should only contain the results for one analysis (i.e., one gene product and frame).
-2. NUMERATOR SITE TYPE: NN, SN, or NS.
-3. DENOMINATOR SITE TYPE: SN, NS, or SS.
-4. SLIDING WINDOW SIZE: measured in CODONS; must be ≥2; ≥25 recommended.
-5. SLIDING WINDOW STEP SIZE: measured in CODONS; must be ≥1.
-6. NUMBER OF BOOTSTRAP REPLICATES PER WINDOW: OPTIONAL; ≥2; DEFAULT=1000.
-7. MINIMUM NUMBER OF DEFINED CODONS PER CODON POSITION (*OPTIONAL*): ≥2; DEFAULT=6.
-8. MULTIPLE HITS CORRECTION (*OPTIONAL*): "NONE" or "JC" (Jukes-Cantor); DEFAULT=NONE. Keep in mind that no correction is truly applicable to OLGs.
-9. NUMBER OF CPUS (*OPTIONAL*): ≥1; DEFAULT=1. A typical personal laptop computer can utilize 4-8 CPUs, while a high performance computing cluster might provide access to 10s or 100s.
-10. STRING TO PREPEND TO OUTPUT LINES (*OPTIONAL*): DEFAULT="".
+1. **CODON RESULTS FILE**. The name/path of the file containing the codon results file from the OLGenie analysis (OLGenie_codon_results.txt). This file must not have been modified, and should only contain the results for one analysis (i.e., one gene product and frame).
+2. **NUMERATOR SITE TYPE**. NN, SN, or NS.
+3. **DENOMINATOR SITE TYPE**. SN, NS, or SS.
+4. **SLIDING WINDOW SIZE**. Measured in CODONS; must be ≥2; ≥25 recommended.
+5. **SLIDING WINDOW STEP SIZE**. Measured in CODONS; must be ≥1.
+6. **NUMBER OF BOOTSTRAP REPLICATES PER WINDOW** (*OPTIONAL*; ≥2; DEFAULT=1000).
+7. **MINIMUM NUMBER OF DEFINED CODONS PER CODON POSITION** (*OPTIONAL*; ≥2; DEFAULT=6).
+8. **MULTIPLE HITS CORRECTION** (*OPTIONAL*; "NONE" or "JC", Jukes-Cantor; DEFAULT=NONE). Keep in mind that no correction is truly applicable to OLGs.
+9. **NUMBER OF CPUS** (*OPTIONAL*; ≥1; DEFAULT=1). A typical personal laptop computer can utilize 4-8 CPUs, while a high performance computing cluster might provide access to 10s or 100s.
+10. **STRING TO PREPEND TO OUTPUT LINES** (*OPTIONAL*; DEFAULT="").
 
 Thus, the format is:
 
@@ -171,16 +174,23 @@ Significant deviations from neutrality (*d*<sub>N</sub> - *d*<sub>S</sub> = 0) c
 11. `site_rich_ratio`: whether this is the most site-rich ratio (**TRUE** or **FALSE**). Note that, for sas12, the more accurate ratios (*d*<sub>NS</sub>/*d*<sub>SS</sub> and *d*<sub>SN</sub>/*d*<sub>SS</sub>) are not the most site-rich.
 12. `gene`: whether this line is an estimate of *d*<sub>N</sub>/*d*<sub>S</sub> for the reference gene (**ORF1**) or the alternate gene (**ORF2**).
 13. `num_replicates`: number of bootstrap replicates performed.
-14. `dN`: the estimate of *d*<sub>N</sub> (numerator of `ratio`).
-15. `dS`: the estimate of *d*<sub>S</sub> (denominator of `ratio`).
-16. `dNdS`: the estimate of *d*<sub>N</sub>/*d*<sub>S</sub> (value of `ratio`).
-17. `dN_m_dS`: the estimate of *d*<sub>N</sub> - *d*<sub>S</sub>.
-18. `boot_dN_SE`: the standard error of *d*<sub>N</sub>, estimated by bootstrapping.
-19. `boot_dS_SE`: the standard error of *d*<sub>S</sub>, estimated by bootstrapping.
-20. `boot_dN_over_dS_SE`: the standard error of *d*<sub>N</sub>/*d*<sub>S</sub>, estimated by bootstrapping.
+14. `dN`: the point estimate of *d*<sub>N</sub> (numerator of `ratio`).
+15. `dS`: the point estimate of *d*<sub>S</sub> (denominator of `ratio`).
+16. `dNdS`: the point estimate of *d*<sub>N</sub>/*d*<sub>S</sub> (value of `ratio`).
+17. `dN_m_dS`: the point estimate of *d*<sub>N</sub> - *d*<sub>S</sub>.
+18. `boot_dN_SE`: the standard error of mean *d*<sub>N</sub>, estimated by bootstrapping.
+19. `boot_dS_SE`: the standard error of mean *d*<sub>S</sub>, estimated by bootstrapping.
+20. `boot_dN_over_dS_SE`: the standard error of mean *d*<sub>N</sub>/*d*<sub>S</sub>, estimated by bootstrapping.
 21. `boot_dN_over_dS_P`: the *P* value of a deviation from *d*<sub>N</sub>/*d*<sub>S</sub> = 1 (two-sided; *Z*-test).
-22. `boot_dN_m_dS_SE`: the standard error of *d*<sub>N</sub> - *d*<sub>S</sub>, estimated by bootstrapping.
-23. `boot_dN_m_dS_P`: the *P* value of a deviation from *d*<sub>N</sub> - *d*<sub>S</sub> = 0 (two-sided; *Z*-test).
+22. `boot_dN_m_dS_SE`: the standard error of mean *d*<sub>N</sub> - *d*<sub>S</sub>, estimated by bootstrapping.
+23. `boot_dN_m_dS_P`: the *P* value of a deviation from *d*<sub>N</sub>-*d*<sub>S</sub>=0, estimated from the bootstrap SE (two-sided; *Z*-test). (***Recommended test.***)
+24. `boot_dN_gt_dS_count`: number of bootstrap replicates in which *d*<sub>N</sub>>*d*<sub>S</sub>.
+25. `boot_dN_eq_dS_count`: number of bootstrap replicates in which *d*<sub>N</sub>=*d*<sub>S</sub>.
+26. `boot_dN_lt_dS_count`: number of bootstrap replicates in which *d*<sub>N</sub><*d*<sub>S</sub>.
+27. `ASL_dN_gt_dS_P`: one-sided achieved significance level (ASL) *P*-value of the null hypothesis that *d*<sub>N</sub>>*d*<sub>S</sub>.
+28. `ASL_dN_lt_dS_P`: one-sided achieved significance level (ASL) *P*-value of the null hypothesis that *d*<sub>N</sub><*d*<sub>S</sub>.
+29. `ASL_dNdS_P`: two-sided achieved significance level (ASL) *P*-value of the null hypothesis that *d*<sub>N</sub>=*d*<sub>S</sub>.
+
 
 ### <a name="sliding-window-output"></a>Sliding Window Output
 
@@ -204,7 +214,7 @@ The R script `OLGenie_sliding_windows.R` can be used to compute any of the *d*<s
 * `sw_boot_dN_over_dS_SE`: standard error (SE) of mean *d*<sub>N</sub>/*d*<sub>S</sub>, estimated as the standard deviation of the bootstrap replicates.
 * `sw_boot_dN_over_dS_P`: *Z*-test *P*-value of null hypothesis that *d*<sub>N</sub>/*d*<sub>S</sub>=1, estimated from the bootstrap SE.
 * `sw_boot_dN_m_dS_SE`: standard error (SE) of mean *d*<sub>N</sub>-*d*<sub>S</sub>, estimated as the standard deviation of the bootstrap replicates.
-* `sw_boot_dN_m_dS_P`: *Z*-test *P*-value of null hypothesis that *d*<sub>N</sub>-*d*<sub>S</sub>=0, estimated from the bootstrap SE. (***Recommended test.***)
+* `sw_boot_dN_m_dS_P`: the *P* value of a deviation from *d*<sub>N</sub>-*d*<sub>S</sub>=0, estimated from the bootstrap SE (two-sided; *Z*-test). (***Recommended test.***)
 * `sw_boot_dN_gt_dS_count`: number of bootstrap replicates in which *d*<sub>N</sub>>*d*<sub>S</sub>.
 * `sw_boot_dN_eq_dS_count`: number of bootstrap replicates in which *d*<sub>N</sub>=*d*<sub>S</sub>.
 * `sw_boot_dN_lt_dS_count`: number of bootstrap replicates in which *d*<sub>N</sub><*d*<sub>S</sub>.
@@ -217,7 +227,7 @@ The R script `OLGenie_sliding_windows.R` can be used to compute any of the *d*<s
 If you have questions about **OLGenie**, please click on the <a target="_blank" href="https://github.com/chasewnelson/OLGenie/issues">Issues</a> tab at the top of this page and begin a new thread, so that others might benefit from the discussion. Common questions will be addressed in this section.
 
 ## <a name="acknowledgments"></a>Acknowledgments
-**OLGenie** was written with support from a Gerstner Scholars Fellowship from the Gerstner Family Foundation at the American Museum of Natural History to C.W.N. (2016-2019), and is maintained with support from a 中央研究院 Academia Sinica Postdoctoral Research Fellowship (2019-2021). The logo image was designed by Mitch Lin (2019); copyright-free DNA helix obtained from Pixabay. Thanks to Reed Cartwright, Jim Hussey, Michael Lynch, Sergios Orestis-Kolokotronis, Wen-Hsiung Li, Apurva Narechania, Sally Warring, Jeff Witmer, Meredith Yeager, Jianzhi (George) Zhang, Martine Zilversmit, and the Sackler Institute for Comparative Genomics workgroup for discussion along the way.
+**OLGenie** was written with support from a Gerstner Scholars Fellowship from the Gerstner Family Foundation at the American Museum of Natural History to C.W.N. (2016-2019), and is maintained with support from a 中央研究院 Academia Sinica Postdoctoral Research Fellowship (2019-2021). The logo image was designed by Mitch Lin (2019); copyright-free DNA helix obtained from Pixabay. Thanks to Reed Cartwright, Dan Graur, Jim Hussey, Michael Lynch, Sergios Orestis-Kolokotronis, Wen-Hsiung Li, Apurva Narechania, Siegfried Scherer, Sally Warring, Jeff Witmer, Meredith Yeager, Jianzhi (George) Zhang, Martine Zilversmit, and the Sackler Institute for Comparative Genomics workgroup for discussion along the way.
 
 ## <a name="citation"></a>Citation
 
