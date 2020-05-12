@@ -85,7 +85,7 @@ Call the script with the following 3-6 (unnamed) arguments (in this order):
 
 Thus, the format is:
 
-	OLGenie_bootstrap.R <codon_results>.txt <num_bootstraps> <num_cpus> > <output>.out
+	OLGenie_bootstrap.R <CODON RESULTS FILE>.txt <MIN DEFINED CODONS> <NUM BOOTSTRAPS> <NUM CPUS> > <output>.out
 
 For example, try the following using the results from **Example 2**:
 
