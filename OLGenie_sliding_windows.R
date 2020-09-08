@@ -63,19 +63,19 @@ PREPEND_TO_OUTPUT <- ''
 
 # Produce some helpful warning messages
 if(! (NBOOTSTRAPS >= 1 && NBOOTSTRAPS <= 1000000)) {
-  cat("### WARNING: NBOOTSTRAPS must be in the range [1,1000000]. Using: 1000.\n")
+  cat("\n### WARNING: NBOOTSTRAPS must be in the range [1,1000000]. Using: 1000.\n")
   NBOOTSTRAPS <- 1000
 }
 
 if(! (MIN_DEFINED_CODONS >= 2)) {
-  cat("### WARNING: MIN_DEFINED_CODONS must be ≥2. Using: 6.\n")
+  cat("\n### WARNING: MIN_DEFINED_CODONS must be ≥2. Using: 6.\n")
   MIN_DEFINED_CODONS <- 6
 }
 
 if(! is.na(ARGV[8]) && ARGV[8] == "JC") {
   CORRECTION <- as.character(ARGV[8])
-} else {
-  cat("### WARNING: unrecognized CORRECTION supplied. Using: \"NONE\".\n")
+} else if (is.na(ARGV[8]) || ARGV[8] != "NONE") {
+  cat("\n### WARNING: unrecognized CORRECTION supplied. Using: \"NONE\".\n")
 }
 
 if(! is.na(ARGV[9]) && str_detect(string = ARGV[9], pattern = "\\d") && ! str_detect(string = ARGV[9], pattern = "[a-zA-Z]")) {
@@ -87,7 +87,7 @@ if(! is.na(ARGV[10])) {
 }
 
 # EXAMPLES
-#CODON_RESULTS_FILE <- "/Users/cwnelson88/Desktop/SCIENCE/Karlin_OLGs_B19/OLGenie_codon_results.txt"
+#CODON_RESULTS_FILE <- "/Users/chase/Desktop/OLG_projects/OLGenie-out.txt"
 #NUMERATOR <- "NN"
 #DENOMINATOR <- "NS"
 #WINDOW_SIZE <- 25
@@ -296,36 +296,36 @@ dNdS_diff_boot_fun_JC <- function(codon_results, numerator, denominator, num_rep
 ### ADD COLUMNS TO DATA
 RATIO_NAME <- paste0('d', NUMERATOR, 'd', DENOMINATOR)
 codon_data$sw_ratio <- RATIO_NAME
-codon_data$sw_start <- NA
-codon_data$sw_center <- NA
-codon_data$sw_end <- NA
-codon_data$sw_num_replicates <- NA
-codon_data$sw_N_diffs <- NA
-codon_data$sw_S_diffs <- NA
-codon_data$sw_N_sites <- NA
-codon_data$sw_S_sites <- NA
-codon_data$sw_dN <- NA
-codon_data$sw_dS <- NA
-codon_data$sw_dNdS <- NA
-codon_data$sw_dN_m_dS <- NA
-codon_data$sw_boot_dN_SE <- NA
-codon_data$sw_boot_dS_SE <- NA
-codon_data$sw_boot_dN_over_dS_SE <- NA
-codon_data$sw_boot_dN_over_dS_P <- NA
-codon_data$sw_boot_dN_m_dS_SE <- NA
-codon_data$sw_boot_dN_m_dS_P <- NA
-codon_data$sw_boot_dN_gt_dS_count <- NA
-codon_data$sw_boot_dN_eq_dS_count <- NA
-codon_data$sw_boot_dN_lt_dS_count <- NA
-codon_data$sw_ASL_dN_gt_dS_P <- NA
-codon_data$sw_ASL_dN_lt_dS_P <- NA
-codon_data$sw_ASL_dNdS_P <- NA
+codon_data$sw_start <- as.double(NA)
+codon_data$sw_center <- as.double(NA)
+codon_data$sw_end <- as.double(NA)
+codon_data$sw_num_replicates <- as.integer(NA)
+codon_data$sw_N_diffs <- as.double(NA)
+codon_data$sw_S_diffs <- as.double(NA)
+codon_data$sw_N_sites <- as.double(NA)
+codon_data$sw_S_sites <- as.double(NA)
+codon_data$sw_dN <- as.double(NA)
+codon_data$sw_dS <- as.double(NA)
+codon_data$sw_dNdS <- as.double(NA)
+codon_data$sw_dN_m_dS <- as.double(NA)
+codon_data$sw_boot_dN_SE <- as.double(NA)
+codon_data$sw_boot_dS_SE <- as.double(NA)
+codon_data$sw_boot_dN_over_dS_SE <- as.double(NA)
+codon_data$sw_boot_dN_over_dS_P <- as.double(NA)
+codon_data$sw_boot_dN_m_dS_SE <- as.double(NA)
+codon_data$sw_boot_dN_m_dS_P <- as.double(NA)
+codon_data$sw_boot_dN_gt_dS_count <- as.integer(NA)
+codon_data$sw_boot_dN_eq_dS_count <- as.integer(NA)
+codon_data$sw_boot_dN_lt_dS_count <- as.integer(NA)
+codon_data$sw_ASL_dN_gt_dS_P <- as.double(NA)
+codon_data$sw_ASL_dN_lt_dS_P <- as.double(NA)
+codon_data$sw_ASL_dNdS_P <- as.double(NA)
 
 
 ### PERFORM SLIDING WINDOW
 cat("Performing sliding window analysis...\n\n")
 for(this_frame in unique(codon_data$frame)) {
-  #this_frame <- 'ss13'
+  #this_frame <- 'sas13'
   frame_codon_data <- filter(codon_data, frame == this_frame, num_defined_seqs >= MIN_DEFINED_CODONS)
   frame_codon_data <- dplyr::arrange(frame_codon_data, codon_num)
   
