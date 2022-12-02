@@ -89,7 +89,7 @@ Thus, the format is:
 
 For example, try the following using the results from **Example 2**:
 
-	OLGenie_bootstrap.R OLGenie_codons_results_ex2.txt 2 1000 4 > example3.out
+	OLGenie_bootstrap.R OLGenie_codon_results_ex2.txt 2 1000 4 > example3.out
 
 This produces TAB-delimited output, as described in the [Bootstrap Output](#bootstrap-output) section.
 
@@ -233,7 +233,7 @@ If you have questions about **OLGenie**, please click on the <a target="_blank" 
 
 When using this software, please refer to and cite:
 
->Nelson CW, Ardern Z, Wei X. <a target="_blank" rel="noopener noreferrer" href="https://academic.oup.com/mbe/advance-article/doi/10.1093/molbev/msaa087/5815567">OLGenie: Estimating Natural Selection to Predict Functional Overlapping Genes</a>. *Molecular Biology and Evolution*, msaa087 (*in press*)
+>Nelson CW, Ardern Z, Wei X. <a target="_blank" rel="noopener noreferrer" href="https://academic.oup.com/mbe/article/37/8/2440/5815567">OLGenie: Estimating Natural Selection to Predict Functional Overlapping Genes</a>. *Molecular Biology and Evolution* **37**(8):2440-2449. DOI: https://doi.org/10.1093/molbev/msaa087
 
 and this page:
 
