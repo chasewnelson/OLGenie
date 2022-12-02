@@ -27,9 +27,9 @@ if(! (length(ARGV) >= 5)) {
   kill_script <- TRUE
 } else if(! (ARGV[3] == "SN" || ARGV[3] == "NS" || ARGV[3] == "SS")) {
   kill_script <- TRUE
-} else if(! (str_detect(string = ARGV[4], pattern = "\\d") && ARGV[4] >= 2)) {
+} else if(! (str_detect(string = ARGV[4], pattern = "\\d") && as.integer(ARGV[4]) >= 2)) {
   kill_script <- TRUE
-} else if(! (str_detect(string = ARGV[5], pattern = "\\d") && ARGV[5] >= 1)) {
+} else if(! (str_detect(string = ARGV[5], pattern = "\\d") && as.integer(ARGV[5]) >= 1)) {
   kill_script <- TRUE
 } # could add more conditions later
 
